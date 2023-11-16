@@ -1,0 +1,21 @@
+{
+	"/": [
+		"src/routes/+page.js",
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/map-art-type": [
+		"src/routes/map-art-type/+page.js",
+		"src/routes/map-art-type/+layout.js",
+		"src/routes/+layout.js",
+		"src/routes/map-art-type/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/map": [
+		"src/routes/map/+page.js",
+		"src/routes/map/+layout.js",
+		"src/routes/+layout.js",
+		"src/routes/map/+layout.js",
+		"src/routes/+layout.js"
+	]
+}
