@@ -1,2 +1,583 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+  import { onMount, afterUpdate } from "svelte";
+  import maplibregl from "maplibre-gl";
+  import vancouverPublicArt from "../data/vancouver-public-art.geo.json";
+  import vancouverPublicTransit from "../data/vancouver-transit.geo.json";
+  import vancouverBoundary from "../data/city-of-vancouver-boundary.geo.json";
+
+  import conservationAuthority from "../data/gta-conservation-authority.geo.json";
+  import municipalities from "../data/gta-municipalities.geo.json";
+
+  onMount(async () => {
+    const csvUrl =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
+
+      try {
+        const response = await fetch(csvUrl);
+    var csvData = await response.text();
+    csvData = csvData.replace(/\r/g, '');
+    // Split the CSV data into an array of rows
+    const rows = csvData.split("\n");
+
+    // Parse CSV data into an array of arrays
+    const parsedData = rows.map(row => row.split(','));
+    
+    // Assuming 'id' is the common key
+    const commonKeyIndex = parsedData[0].indexOf('MUNID'); // Adjust 'id' to your actual common key
+
+    // Iterate through GeoJSON features
+    municipalities.features.forEach(feature => {
+      // Find matching record in CSV data
+      const matchingRecord = parsedData.find(record => record[commonKeyIndex] === feature.properties.MUNID);
+      matchingRecord[matchingRecord.length-1] = parseInt(matchingRecord[matchingRecord.length-1])
+      // If a match is found, update GeoJSON properties with CSV data
+      if (matchingRecord) {
+        matchingRecord.forEach((value, index) => {
+          // Skip the common key, assuming 'id' is not in CSV data
+          if (index !== commonKeyIndex) {
+            feature.properties[parsedData[0][index]] = value;
+
+          }
+        });
+      } 
+    });
+
+    // Now municipalities GeoJSON features have additional properties from the CSV data
+    console.log(municipalities.features);
+    } catch (error) {
+      console.error("Error fetching or processing CSV:", error);
+    }
+  });
+
+  let map;
+  let popupContent = false;
+
+  function hidePopup() {
+    popupContent = false;
+  }
+
+  let coordinates;
+  let title;
+  let description;
+  let type;
+  let status;
+  let siteaddress;
+  let primarymaterial;
+  const photoURL =
+    "https://opendata.vancouver.ca/explore/dataset/public-art/files/";
+  let photoID;
+  let year;
+
+  onMount(() => {
+    map = new maplibregl.Map({
+      container: "map",
+      style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      center: [-79.4, 44.1], // starting position
+      zoom: 8, // starting zoom;
+      minZoom: 2,
+      maxZoom: 17,
+      projection: "globe",
+      scrollZoom: true,
+      attributionControl: false,
+    });
+
+    // Adding scale bar to the map
+    let scale = new maplibregl.ScaleControl({
+      maxWidth: 100,
+      unit: "metric",
+    });
+    map.addControl(scale, "bottom-left");
+
+    // Adding zoom and rotation controls to the map
+    map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+    // Adding additional layers from geojson
+    map.on("load", function () {
+      const layers = map.getStyle().layers;
+
+      // Find the index of the first symbol layer in the map style.
+      let firstSymbolId;
+      for (const layer of layers) {
+        if (layer.type === "symbol") {
+          firstSymbolId = layer.id;
+          break;
+        }
+      }
+      /*
+      map.addSource("vancouverPublicTransit", {
+        type: "geojson",
+        data: vancouverPublicTransit,
+      });
+
+      map.addSource("vancouverBoundary", {
+        type: "geojson",
+        data: vancouverBoundary,
+      });
+
+      map.addSource("vancouverPublicArt", {
+        type: "geojson",
+        data: vancouverPublicArt,
+      });
+      */
+      map.addSource("conservationAuthority", {
+        type: "geojson",
+        data: conservationAuthority,
+      });
+      map.addSource("municipalities", {
+        type: "geojson",
+        data: municipalities,
+      });
+      /*
+      map.addLayer(
+        {
+          id: "vancouverPublicTransit",
+          type: "line",
+          source: "vancouverPublicTransit",
+          layout: {},
+          paint: {
+            "line-color": "#F1C500",
+            "line-width": 2,
+            "line-dasharray": [3, 1],
+          },
+        },
+        "highway_name_major"
+      );
+        */
+      /*
+      map.addLayer(
+        {
+          id: "vancouverBoundary",
+          type: "line",
+          source: "vancouverBoundary",
+          layout: {},
+          paint: {
+            "line-opacity": 0.64,
+            "line-color": "#575870",
+            "line-width": 4,
+
+            "line-dasharray": [6, 0.5, 1, 0.5, 1, 0.5],
+          },
+        },
+        "highway_name_major"
+      );
+        */
+      map.addLayer({
+        id: "conservationAuthority",
+        type: "line",
+        source: "conservationAuthority",
+        layout: {},
+        paint: {
+          'line-color': '#f00',  // Border color
+          'line-width': 2  // Border width
+        },
+      });
+      
+      map.addLayer({
+        id: "municipalities",
+        type: "fill",
+        source: "municipalities",
+        layout: {},
+        paint: {
+          'fill-color': [
+                'interpolate',
+                ['linear'],
+                ['get', 'value'],  // Property in your GeoJSON data containing the values
+                0, '#FF0000',      // Red for values 0 or lower
+                50, '#00FF00',     // Green for values between 0 and 50
+                100, '#0000FF',     // Blue for values 50 or higher
+                /* Add more stops and colors as needed */
+                "#FFFFFF"
+            ],
+           
+        },
+      });
+      map.addLayer({
+        id: "municipalities-border",
+        type: "line",
+        source: "municipalities",
+        layout: {},
+        paint: {
+            'line-color': '#f00',  // Border color
+            'line-width': 2  // Border width
+        },
+      });
+      // attempt to fit the maps to the boundaries of the displaying municipalities
+      var officialName = municipalities.features[0].properties.OFFICIAL_MUNICIPAL_NAME
+      var id = municipalities.features[0].properties.MUNID
+      var layerCount = municipalities.features[0].properties.LAYER_COUNT
+      //console.log(id, ":", officialName, "Layer Count: ", layerCount)
+      var municipalCoordinates = municipalities.features[0].geometry.coordinates
+      //let bounds = new maplibregl.LngLatBounds();
+      //municipalCoordinates.forEach(coord => bounds.extend(coord));
+      //map.fitBounds(bounds, { padding: 20 });
+      /*
+      map.addLayer({
+        id: "vancouverPublicArt",
+        type: "circle",
+        source: "vancouverPublicArt",
+        layout: {},
+        paint: {
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0,
+            1,
+            12,
+            5,
+            18,
+            12,
+          ],
+          "circle-stroke-color": "white", // Stroke color
+          "circle-stroke-width": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            12,
+            1,
+            20,
+            3,
+          ],
+          "circle-color": [
+            "match",
+            ["get", "status"],
+            "In place",
+            "#6D247A", //3F7671, 93677D, 8095D6
+            "No longer in place",
+            "#DC4633", //A1B053
+            "Deaccessioned",
+            "#DC4633",
+            "#ccc",
+          ],
+        },
+        before: "vancouverPublicTransit",
+      });
+      */
+    });
+
+    // Create pop-up
+    const popup = new maplibregl.Popup({
+      closeButton: true,
+      closeOnClick: true,
+      maxWidth: "none",
+    });
+
+    map.on("mouseenter", "municipalities", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+
+    map.on("mouseleave", "municipalities", () => {
+      map.getCanvas().style.cursor = "";
+    });
+
+    map.on("click", "municipalities", (e) => {
+      console.log(e.features[0].properties.OFFICIAL_MUNICIPAL_NAME, ", ", e.features[0].properties.LAYER_COUNT)
+      
+      /*
+      $: title = e.features[0].properties.OFFICIAL_MUNICIPAL_NAME;
+      $: coordinates = e.features[0].geometry.coordinates.slice();
+      $: title = e.features[0].properties.title_of_work;
+      $: description = e.features[0].properties.descriptionofwork;
+      $: type = e.features[0].properties.type;
+      $: status = e.features[0].properties.status;
+      $: siteaddress = e.features[0].properties.siteaddress;
+      $: primarymaterial = e.features[0].properties.primarymaterial;
+      // $: photoURL = "https://opendata.vancouver.ca/explore/dataset/public-art/files/";
+      $: photoID = JSON.parse(e.features[0].properties.photourl).id;
+      $: year = e.features[0].properties.yearofinstallation;
+      */
+      // Organize popup information
+      // const htmlContent =
+      // "<h1 id='pt'>" + title + "</h1>" +
+      // "<p> <img src='" + photoURL + photoID + "/download/' width=300 height=240> </p>" +
+      // "<p> <b>Description: </b>" + description + "</p>" +
+      // "<p> <b>Type: </b>" + type + "</p>" +
+      // "<p> <b>Current Status: </b>" + status + "</p>" +
+      // "<p> <b>Primary Material: </b>" + primarymaterial + "</p>" +
+      // "<p> <b>Address: </b>" + siteaddress + "</p>" +
+      // "<p> <b>Year of Installation: </b>" + year + "</p>";
+
+      // Populate the popup
+      popup.setLngLat(coordinates);
+      popupContent = true;
+      //document.getElementById('popup').innerHTML = htmlContent;
+    });
+
+    // Update map filter on dropdown change
+    document.getElementById("thelist").addEventListener("change", (e) => {
+      //if the selected dropdown element has index 1, filter the 'vancouverPublicArt' layer to show only public art with the status of in place
+      if (document.getElementById("thelist").selectedIndex === 1) {
+        map.setFilter("vancouverPublicArt", [
+          "==",
+          ["get", "status"],
+          "In place",
+        ]);
+      }
+      //if the selected dropdown element has index 2, filter the 'vancouverPublicArt' layer to show only public art with the status of no longer in place
+      else if (document.getElementById("thelist").selectedIndex === 2) {
+        map.setFilter("vancouverPublicArt", [
+          "==",
+          ["get", "status"],
+          "No longer in place",
+        ]);
+      }
+      //if the selected dropdown element has index 3, filter the 'vancouverPublicArt' layer to show only public art with the status of deaccessioned
+      else if (document.getElementById("thelist").selectedIndex === 3) {
+        map.setFilter("vancouverPublicArt", [
+          "==",
+          ["get", "status"],
+          "Deaccessioned",
+        ]);
+      }
+      //if the selected dropdown element has index 0 , remove the 'vancouverPublicArt' layer filter to show all public art
+      else if (document.getElementById("thelist").selectedIndex === 0) {
+        map.setFilter("vancouverPublicArt", null);
+      }
+    });
+  });
+
+  $: if (popupContent) {
+    console.log(photoURL + "/" + photoID + "/download/");
+  }
+</script>
+
+<main>
+  <div id="map" />
+
+  <div class="legend">
+    <h1>Vancouver Public Art Map</h1>
+    <div class="legend-item">
+      <span class="legend-color" style="background-color: #6D247A;" />
+      <span class="legend-text">In place &nbsp;</span>
+      <span class="legend-color" style="background-color: #DC4633;" />
+      <span class="legend-text">No Longer In Place / Deaccessioned</span>
+    </div>
+    <p id="info">
+      Map created by <a href="https://www.linkedin.com/in/irene-kcc/"
+        >Irene Chang</a
+      >
+      and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
+      <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
+      with data from the
+      <a
+        href="https://opendata.vancouver.ca/explore/dataset/public-art/information/"
+        >City of Vancouver</a
+      >. More on
+      <a href="https://github.com/schoolofcities/vancouver-public-art">GitHub</a
+      >.
+    </p>
+  </div>
+
+  <div class="popup">
+    {#if popupContent}
+      <div id="hide" on:click={hidePopup}>Click Here To Hide Content</div>
+      <h2>{title}</h2>
+      <p>
+        <img
+          src={photoURL + "/" + photoID + "/download/"}
+          width="300"
+          height="240"
+        />
+      </p>
+      <p><span id="subtitle">Type: </span>{type}</p>
+      <p><span id="subtitle">Description: </span>{description}</p>
+      <p><span id="subtitle">Current Status: </span>{status}</p>
+      <p><span id="subtitle">Primary Material: </span>{primarymaterial}</p>
+      <p><span id="subtitle">Address: </span>{siteaddress}</p>
+      <p><span id="subtitle">Year of Installation: </span>{year}</p>
+    {/if}
+  </div>
+
+  <!-- <div class='map-overlay-dropdown'>
+      <form>
+                <label>The artwork status is:</label>
+                <select id="thelist">
+                    <option value="1">Show all</option>
+                    <option value="2">In place</option>
+                    <option value="3">No longer in place</option>
+                    <option value="4">Deaccessioned</option>
+                </select>
+      </form>
+     </div> -->
+</main>
+
+<style>
+  main {
+    overflow-y: hidden;
+  }
+
+  :global(body) {
+    overflow: hidden;
+  }
+  @font-face {
+    font-family: TradeGothicBold;
+    src: url("../../assets/Trade Gothic LT Bold.ttf");
+  }
+  @font-face {
+    font-family: RobotoRegular;
+    src: url("../../assets/Roboto-Regular.ttf");
+  }
+
+  #map {
+    height: 100vh;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: relative;
+  }
+
+  .popup {
+    position: absolute;
+    top: 145px;
+    left: 10px;
+    width: 290px; /* Set a fixed width for the popup */
+    max-height: calc(
+      100% - 200px
+    ); /* Calculate the max height based on viewport height */
+    /* overflow-y: scroll;  */
+    background-color: rgb(254, 251, 249, 0.9);
+    padding: 0px;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    overflow-x: hidden;
+  }
+
+  #hide {
+    position: absolute;
+    height: 15px;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    top: 0px;
+    left: 0px;
+    font-family: TradeGothicBold;
+    font-size: 12px;
+    color: #9da9bd;
+    background-color: none;
+    border-bottom: solid 1px rgb(227, 227, 227);
+    z-index: 9999;
+    text-align: center;
+  }
+  #hide:hover {
+    color: #dc4633;
+    cursor: pointer;
+  }
+
+  .legend {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 300px;
+    height: 105px;
+    font-size: 17px;
+    font-family: TradeGothicBold;
+    background-color: rgb(254, 251, 249, 0.9);
+    color: #1e3765;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  h1 {
+    font-size: 24px;
+    font-family: TradeGothicBold;
+    padding: 0px;
+    padding-left: 4px;
+    padding-top: 2px;
+    border-bottom: solid 1px #e7e7e7;
+    padding-bottom: 3px;
+    margin: 0px;
+    margin-bottom: 7px;
+    color: #00a189;
+    /* background-color: #F1C500; */
+    background-color: #ffffff;
+    background: linear-gradient(135deg, #f1c50055 25%, transparent 25%) -4px 0/
+        8px 8px,
+      linear-gradient(225deg, #f1c50032 25%, transparent 25%) -4px 0/ 8px 8px,
+      linear-gradient(315deg, #f1c50055 25%, transparent 25%) 0px 0/ 8px 8px,
+      linear-gradient(45deg, #f1c50044 25%, #ffffff 25%) 0px 0/ 8px 8px;
+    /* -webkit-text-stroke: 1px #6FC7EA; */
+  }
+
+  h2 {
+    font-size: 24px;
+    font-family: TradeGothicBold;
+    padding: 2px;
+    margin: 0px;
+    margin-top: 8px;
+    /* margin-bottom: -4px; */
+    color: #00a189;
+    background: linear-gradient(135deg, #f1c50055 25%, transparent 25%) -4px 0/
+        8px 8px,
+      linear-gradient(225deg, #f1c50032 25%, transparent 25%) -4px 0/ 8px 8px,
+      linear-gradient(315deg, #f1c50055 25%, transparent 25%) 0px 0/ 8px 8px,
+      linear-gradient(45deg, #f1c50044 25%, #ffffff 25%) 0px 0/ 8px 8px;
+    /* -webkit-text-stroke: 1px #6FC7EA; */
+  }
+
+  #subtitle {
+    font-family: TradeGothicBold;
+    color: #1e3765;
+    font-size: 16px;
+  }
+
+  p {
+    font-family: RobotoRegular;
+    font-size: 13px;
+    opacity: 1;
+    color: #1e3765;
+  }
+
+  a {
+    text-decoration: underline;
+    color: #1e3765;
+  }
+  a:hover {
+    color: #dc4633;
+  }
+
+  #info {
+    font-size: 11.2px;
+    padding: 0px;
+    margin: 0px;
+    border-top: solid 1px #e7e7e7;
+    margin-top: 7px;
+    padding-top: 7px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .legend-color {
+    width: 13px;
+    height: 13px;
+    margin-right: 5px;
+    border-radius: 50%;
+  }
+
+  .legend-text {
+    font-family: TradeGothicBold;
+    color: #1e3765;
+    font-size: 14px;
+  }
+
+  .map-overlay-dropdown {
+    position: absolute;
+    font: 17px/20px "Trade Gothic LT Bold";
+    background: rgba(249, 249, 249, 1);
+    height: 45px;
+    bottom: 195px;
+    width: 157px;
+    margin: 10px 0 0 10px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    overflow: visible;
+  }
+</style>
