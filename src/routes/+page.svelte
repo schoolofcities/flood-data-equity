@@ -1,9 +1,6 @@
 <script>
   import { onMount, afterUpdate } from "svelte";
   import maplibregl from "maplibre-gl";
-  import vancouverPublicArt from "../data/vancouver-public-art.geo.json";
-  import vancouverPublicTransit from "../data/vancouver-transit.geo.json";
-  import vancouverBoundary from "../data/city-of-vancouver-boundary.geo.json";
 
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
@@ -12,38 +9,41 @@
     const csvUrl =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
 
-      try {
-        const response = await fetch(csvUrl);
-    var csvData = await response.text();
-    csvData = csvData.replace(/\r/g, '');
-    // Split the CSV data into an array of rows
-    const rows = csvData.split("\n");
+    try {
+      const response = await fetch(csvUrl);
+      var csvData = await response.text();
+      csvData = csvData.replace(/\r/g, "");
+      // Split the CSV data into an array of rows
+      const rows = csvData.split("\n");
 
-    // Parse CSV data into an array of arrays
-    const parsedData = rows.map(row => row.split(','));
-    
-    // Assuming 'id' is the common key
-    const commonKeyIndex = parsedData[0].indexOf('MUNID'); // Adjust 'id' to your actual common key
+      // Parse CSV data into an array of arrays
+      const parsedData = rows.map((row) => row.split(","));
 
-    // Iterate through GeoJSON features
-    municipalities.features.forEach(feature => {
-      // Find matching record in CSV data
-      const matchingRecord = parsedData.find(record => record[commonKeyIndex] === feature.properties.MUNID);
-      matchingRecord[matchingRecord.length-1] = parseInt(matchingRecord[matchingRecord.length-1])
-      // If a match is found, update GeoJSON properties with CSV data
-      if (matchingRecord) {
-        matchingRecord.forEach((value, index) => {
-          // Skip the common key, assuming 'id' is not in CSV data
-          if (index !== commonKeyIndex) {
-            feature.properties[parsedData[0][index]] = value;
+      // Assuming 'id' is the common key
+      const commonKeyIndex = parsedData[0].indexOf("MUNID"); // Adjust 'id' to your actual common key
 
-          }
-        });
-      } 
-    });
+      // Iterate through GeoJSON features
+      municipalities.features.forEach((feature) => {
+        // Find matching record in CSV data
+        const matchingRecord = parsedData.find(
+          (record) => record[commonKeyIndex] === feature.properties.MUNID
+        );
+        matchingRecord[matchingRecord.length - 1] = parseInt(
+          matchingRecord[matchingRecord.length - 1]
+        );
+        // If a match is found, update GeoJSON properties with CSV data
+        if (matchingRecord) {
+          matchingRecord.forEach((value, index) => {
+            // Skip the common key, assuming 'id' is not in CSV data
+            if (index !== commonKeyIndex) {
+              feature.properties[parsedData[0][index]] = value;
+            }
+          });
+        }
+      });
 
-    // Now municipalities GeoJSON features have additional properties from the CSV data
-    console.log(municipalities.features);
+      // Now municipalities GeoJSON features have additional properties from the CSV data
+      console.log(municipalities.features);
     } catch (error) {
       console.error("Error fetching or processing CSV:", error);
     }
@@ -103,22 +103,6 @@
           break;
         }
       }
-      /*
-      map.addSource("vancouverPublicTransit", {
-        type: "geojson",
-        data: vancouverPublicTransit,
-      });
-
-      map.addSource("vancouverBoundary", {
-        type: "geojson",
-        data: vancouverBoundary,
-      });
-
-      map.addSource("vancouverPublicArt", {
-        type: "geojson",
-        data: vancouverPublicArt,
-      });
-      */
       map.addSource("conservationAuthority", {
         type: "geojson",
         data: conservationAuthority,
@@ -161,34 +145,28 @@
         "highway_name_major"
       );
         */
-      map.addLayer({
-        id: "conservationAuthority",
-        type: "line",
-        source: "conservationAuthority",
-        layout: {},
-        paint: {
-          'line-color': '#f00',  // Border color
-          'line-width': 2  // Border width
-        },
-      });
-      
+
       map.addLayer({
         id: "municipalities",
         type: "fill",
         source: "municipalities",
         layout: {},
         paint: {
-          'fill-color': [
-                'interpolate',
-                ['linear'],
-                ['get', 'value'],  // Property in your GeoJSON data containing the values
-                0, '#FF0000',      // Red for values 0 or lower
-                50, '#00FF00',     // Green for values between 0 and 50
-                100, '#0000FF',     // Blue for values 50 or higher
-                /* Add more stops and colors as needed */
-                "#FFFFFF"
-            ],
-           
+          "fill-color": [
+            "step",
+            ["get", "LAYER_COUNT"], // Property in your GeoJSON data containing the values
+            "#FF0000",
+            0, // Red for values 0 or lower
+            "#00FF00",
+            20, // Green for values between 0 and 50
+            "yellow",
+            50, // yellow for 20-50
+            "#0000FF",
+            100, // Blue for values 50 or higher
+            /* Add more stops and colors as needed */
+            "#FFFFFF",
+          ],
+          "fill-opacity": 0.3,
         },
       });
       map.addLayer({
@@ -197,16 +175,19 @@
         source: "municipalities",
         layout: {},
         paint: {
-            'line-color': '#f00',  // Border color
-            'line-width': 2  // Border width
+          "line-color": "#000000", // Border color
+          "line-width": 1, // Border width
         },
       });
+
       // attempt to fit the maps to the boundaries of the displaying municipalities
-      var officialName = municipalities.features[0].properties.OFFICIAL_MUNICIPAL_NAME
-      var id = municipalities.features[0].properties.MUNID
-      var layerCount = municipalities.features[0].properties.LAYER_COUNT
+      var officialName =
+        municipalities.features[0].properties.OFFICIAL_MUNICIPAL_NAME;
+      var id = municipalities.features[0].properties.MUNID;
+      var layerCount = municipalities.features[0].properties.LAYER_COUNT;
       //console.log(id, ":", officialName, "Layer Count: ", layerCount)
-      var municipalCoordinates = municipalities.features[0].geometry.coordinates
+      var municipalCoordinates =
+        municipalities.features[0].geometry.coordinates;
       //let bounds = new maplibregl.LngLatBounds();
       //municipalCoordinates.forEach(coord => bounds.extend(coord));
       //map.fitBounds(bounds, { padding: 20 });
@@ -253,6 +234,17 @@
         before: "vancouverPublicTransit",
       });
       */
+      map.addLayer({
+        id: "conservationAuthority",
+        type: "line",
+        source: "conservationAuthority",
+        layout: {},
+        paint: {
+          "line-color": "grey", // Border color
+          "line-width": 2, // Border width
+          "line-dasharray": [2, 2],
+        },
+      });
     });
 
     // Create pop-up
@@ -271,8 +263,12 @@
     });
 
     map.on("click", "municipalities", (e) => {
-      console.log(e.features[0].properties.OFFICIAL_MUNICIPAL_NAME, ", ", e.features[0].properties.LAYER_COUNT)
-      
+      console.log(
+        e.features[0].properties.OFFICIAL_MUNICIPAL_NAME,
+        ", ",
+        e.features[0].properties.LAYER_COUNT
+      );
+
       /*
       $: title = e.features[0].properties.OFFICIAL_MUNICIPAL_NAME;
       $: coordinates = e.features[0].geometry.coordinates.slice();
@@ -345,7 +341,7 @@
   <div id="map" />
 
   <div class="legend">
-    <h1>Vancouver Public Art Map</h1>
+    <h1>Flood Data Equity</h1>
     <div class="legend-item">
       <span class="legend-color" style="background-color: #6D247A;" />
       <span class="legend-text">In place &nbsp;</span>
