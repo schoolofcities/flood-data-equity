@@ -4,6 +4,7 @@
 
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
+  import uppertier from "../data/gta-upper-tier-municipalities.geo.json"
 
   onMount(async () => {
     const csvUrl =
@@ -111,6 +112,10 @@
         type: "geojson",
         data: municipalities,
       });
+      map.addSource("uppertier", {
+        type: "geojson",
+        data: uppertier,
+      });
       /*
       map.addLayer(
         {
@@ -177,6 +182,16 @@
         paint: {
           "line-color": "#000000", // Border color
           "line-width": 1, // Border width
+        },
+      });
+      map.addLayer({
+        id: "uppertier-border",
+        type: "line",
+        source: "uppertier",
+        layout: {},
+        paint: {
+          "line-color": "grey", // Border color
+          "line-width": 3, // Border width
         },
       });
 
