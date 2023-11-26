@@ -19,7 +19,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@turf/turf": "^6.5.0",
+		"d3-dsv": "^3.0.1",
 		"jquery": "^3.7.1",
-		"maplibre-gl": "^3.6.1"
+		"maplibre-gl": "^3.6.1",
+		"turf": "^3.0.14"
 	}
 }

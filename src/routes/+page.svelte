@@ -1,11 +1,11 @@
 <script>
   import { onMount, afterUpdate } from "svelte";
-  import maplibregl from "maplibre-gl";
+  import maplibregl, { LineIndexArray } from "maplibre-gl";
 
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
-  import uppertier from "../data/gta-upper-tier-municipalities.geo.json"
-
+  import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
+  import * as turf from '@turf/turf'; // this is for fitting the map boundary to GTA municipalities
   onMount(async () => {
     const csvUrl =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
@@ -14,6 +14,7 @@
       const response = await fetch(csvUrl);
       var csvData = await response.text();
       csvData = csvData.replace(/\r/g, "");
+      
       // Split the CSV data into an array of rows
       const rows = csvData.split("\n");
 
@@ -22,29 +23,38 @@
 
       // Assuming 'id' is the common key
       const commonKeyIndex = parsedData[0].indexOf("MUNID"); // Adjust 'id' to your actual common key
+      const munCountIndex = parsedData[0].indexOf("MUN_LAYER_COUNT")
+      const regionCountIndex = parsedData[0].indexOf("REG_LAYER_COUNT")
 
       // Iterate through GeoJSON features
       municipalities.features.forEach((feature) => {
         // Find matching record in CSV data
         const matchingRecord = parsedData.find(
-          (record) => record[commonKeyIndex] === feature.properties.MUNID
+          (record) => record[commonKeyIndex] === feature.properties.MUNID,
         );
-        matchingRecord[matchingRecord.length - 1] = parseInt(
-          matchingRecord[matchingRecord.length - 1]
-        );
+        
         // If a match is found, update GeoJSON properties with CSV data
         if (matchingRecord) {
           matchingRecord.forEach((value, index) => {
             // Skip the common key, assuming 'id' is not in CSV data
             if (index !== commonKeyIndex) {
-              feature.properties[parsedData[0][index]] = value;
+              // If 
+              if (index == munCountIndex || index == regionCountIndex){
+                console.log(value)
+                feature.properties[parsedData[0][index]] = parseInt(value);
+              }
+              else{
+                //console.log("Other", value)
+                //feature.properties[parsedData[0][index]] = value;
+                //console.log(value)
+              }
+              
             }
           });
         }
       });
 
       // Now municipalities GeoJSON features have additional properties from the CSV data
-      console.log(municipalities.features);
     } catch (error) {
       console.error("Error fetching or processing CSV:", error);
     }
@@ -56,17 +66,15 @@
   function hidePopup() {
     popupContent = false;
   }
+  console.log(municipalities.features[9].properties)
 
-  let coordinates;
   let title;
-  let description;
-  let type;
-  let status;
-  let siteaddress;
-  let primarymaterial;
-  const photoURL =
-    "https://opendata.vancouver.ca/explore/dataset/public-art/files/";
-  let photoID;
+  let uppertiers;
+  let munLayer;
+  let regLayer;
+  let lowertier;
+  let link;
+  let linkText;
   let year;
 
   onMount(() => {
@@ -116,41 +124,6 @@
         type: "geojson",
         data: uppertier,
       });
-      /*
-      map.addLayer(
-        {
-          id: "vancouverPublicTransit",
-          type: "line",
-          source: "vancouverPublicTransit",
-          layout: {},
-          paint: {
-            "line-color": "#F1C500",
-            "line-width": 2,
-            "line-dasharray": [3, 1],
-          },
-        },
-        "highway_name_major"
-      );
-        */
-      /*
-      map.addLayer(
-        {
-          id: "vancouverBoundary",
-          type: "line",
-          source: "vancouverBoundary",
-          layout: {},
-          paint: {
-            "line-opacity": 0.64,
-            "line-color": "#575870",
-            "line-width": 4,
-
-            "line-dasharray": [6, 0.5, 1, 0.5, 1, 0.5],
-          },
-        },
-        "highway_name_major"
-      );
-        */
-
       map.addLayer({
         id: "municipalities",
         type: "fill",
@@ -159,15 +132,15 @@
         paint: {
           "fill-color": [
             "step",
-            ["get", "LAYER_COUNT"], // Property in your GeoJSON data containing the values
+            ["get", "MUN_LAYER_COUNT"], // Property in your GeoJSON data containing the values
             "#FF0000",
-            0, // Red for values 0 or lower
+            2, // Red for values 0 or lower
             "#00FF00",
-            20, // Green for values between 0 and 50
+            4, // Green for values between 0 and 50
             "yellow",
-            50, // yellow for 20-50
+            7, // yellow for 20-50
             "#0000FF",
-            100, // Blue for values 50 or higher
+            10, // Blue for values 50 or higher
             /* Add more stops and colors as needed */
             "#FFFFFF",
           ],
@@ -191,64 +164,14 @@
         layout: {},
         paint: {
           "line-color": "grey", // Border color
-          "line-width": 3, // Border width
+          "line-width": 5, // Border width
         },
       });
 
-      // attempt to fit the maps to the boundaries of the displaying municipalities
-      var officialName =
-        municipalities.features[0].properties.OFFICIAL_MUNICIPAL_NAME;
-      var id = municipalities.features[0].properties.MUNID;
-      var layerCount = municipalities.features[0].properties.LAYER_COUNT;
-      //console.log(id, ":", officialName, "Layer Count: ", layerCount)
-      var municipalCoordinates =
-        municipalities.features[0].geometry.coordinates;
-      //let bounds = new maplibregl.LngLatBounds();
-      //municipalCoordinates.forEach(coord => bounds.extend(coord));
-      //map.fitBounds(bounds, { padding: 20 });
-      /*
-      map.addLayer({
-        id: "vancouverPublicArt",
-        type: "circle",
-        source: "vancouverPublicArt",
-        layout: {},
-        paint: {
-          "circle-radius": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            0,
-            1,
-            12,
-            5,
-            18,
-            12,
-          ],
-          "circle-stroke-color": "white", // Stroke color
-          "circle-stroke-width": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            12,
-            1,
-            20,
-            3,
-          ],
-          "circle-color": [
-            "match",
-            ["get", "status"],
-            "In place",
-            "#6D247A", //3F7671, 93677D, 8095D6
-            "No longer in place",
-            "#DC4633", //A1B053
-            "Deaccessioned",
-            "#DC4633",
-            "#ccc",
-          ],
-        },
-        before: "vancouverPublicTransit",
-      });
-      */
+      // Fit the map to the bounds of the polygon
+      var bbox = turf.bbox(municipalities); // Using Turf.js to calculate the bounding box
+      map.fitBounds(bbox, { padding: 20 });
+
       map.addLayer({
         id: "conservationAuthority",
         type: "line",
@@ -281,75 +204,28 @@
       console.log(
         e.features[0].properties.OFFICIAL_MUNICIPAL_NAME,
         ", ",
-        e.features[0].properties.LAYER_COUNT
+        e.features[0].properties.MUN_LAYER_COUNT,
+        ", ",
+        e.features[0].properties.LINK_TEXT,
+        ", ",
+        e.features[0].properties.LINK,
+        
       );
 
-      /*
-      $: title = e.features[0].properties.OFFICIAL_MUNICIPAL_NAME;
-      $: coordinates = e.features[0].geometry.coordinates.slice();
-      $: title = e.features[0].properties.title_of_work;
-      $: description = e.features[0].properties.descriptionofwork;
-      $: type = e.features[0].properties.type;
-      $: status = e.features[0].properties.status;
-      $: siteaddress = e.features[0].properties.siteaddress;
-      $: primarymaterial = e.features[0].properties.primarymaterial;
-      // $: photoURL = "https://opendata.vancouver.ca/explore/dataset/public-art/files/";
-      $: photoID = JSON.parse(e.features[0].properties.photourl).id;
-      $: year = e.features[0].properties.yearofinstallation;
-      */
-      // Organize popup information
-      // const htmlContent =
-      // "<h1 id='pt'>" + title + "</h1>" +
-      // "<p> <img src='" + photoURL + photoID + "/download/' width=300 height=240> </p>" +
-      // "<p> <b>Description: </b>" + description + "</p>" +
-      // "<p> <b>Type: </b>" + type + "</p>" +
-      // "<p> <b>Current Status: </b>" + status + "</p>" +
-      // "<p> <b>Primary Material: </b>" + primarymaterial + "</p>" +
-      // "<p> <b>Address: </b>" + siteaddress + "</p>" +
-      // "<p> <b>Year of Installation: </b>" + year + "</p>";
-
-      // Populate the popup
-      popup.setLngLat(coordinates);
+      $: title = e.features[0].properties.MUNICIPAL_NAME_SHORTFORM;
+      $: lowertier = e.features[0].properties.OFFICIAL_MUNICIPAL_NAME;
+      $: uppertiers = e.features[0].properties.UPPER_TIER_MUNICIPALITY;
+      $: munLayer = e.features[0].properties.MUN_LAYER_COUNT;
+      $: regLayer = e.features[0].properties.REG_LAYER_COUNT;
+      $: linkText = e.features[0].properties.LINK_TEXT;
+      $: link = e.features[0].properties.LINK;
       popupContent = true;
-      //document.getElementById('popup').innerHTML = htmlContent;
-    });
-
-    // Update map filter on dropdown change
-    document.getElementById("thelist").addEventListener("change", (e) => {
-      //if the selected dropdown element has index 1, filter the 'vancouverPublicArt' layer to show only public art with the status of in place
-      if (document.getElementById("thelist").selectedIndex === 1) {
-        map.setFilter("vancouverPublicArt", [
-          "==",
-          ["get", "status"],
-          "In place",
-        ]);
-      }
-      //if the selected dropdown element has index 2, filter the 'vancouverPublicArt' layer to show only public art with the status of no longer in place
-      else if (document.getElementById("thelist").selectedIndex === 2) {
-        map.setFilter("vancouverPublicArt", [
-          "==",
-          ["get", "status"],
-          "No longer in place",
-        ]);
-      }
-      //if the selected dropdown element has index 3, filter the 'vancouverPublicArt' layer to show only public art with the status of deaccessioned
-      else if (document.getElementById("thelist").selectedIndex === 3) {
-        map.setFilter("vancouverPublicArt", [
-          "==",
-          ["get", "status"],
-          "Deaccessioned",
-        ]);
-      }
-      //if the selected dropdown element has index 0 , remove the 'vancouverPublicArt' layer filter to show all public art
-      else if (document.getElementById("thelist").selectedIndex === 0) {
-        map.setFilter("vancouverPublicArt", null);
-      }
+      
     });
   });
 
-  $: if (popupContent) {
-    console.log(photoURL + "/" + photoID + "/download/");
-  }
+
+
 </script>
 
 <main>
@@ -364,18 +240,11 @@
       <span class="legend-text">No Longer In Place / Deaccessioned</span>
     </div>
     <p id="info">
-      Map created by <a href="https://www.linkedin.com/in/irene-kcc/"
-        >Irene Chang</a
+      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
+        >Michael Liu</a
       >
       and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
       <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
-      with data from the
-      <a
-        href="https://opendata.vancouver.ca/explore/dataset/public-art/information/"
-        >City of Vancouver</a
-      >. More on
-      <a href="https://github.com/schoolofcities/vancouver-public-art">GitHub</a
-      >.
     </p>
   </div>
 
@@ -383,33 +252,19 @@
     {#if popupContent}
       <div id="hide" on:click={hidePopup}>Click Here To Hide Content</div>
       <h2>{title}</h2>
-      <p>
-        <img
-          src={photoURL + "/" + photoID + "/download/"}
-          width="300"
-          height="240"
-        />
-      </p>
-      <p><span id="subtitle">Type: </span>{type}</p>
-      <p><span id="subtitle">Description: </span>{description}</p>
-      <p><span id="subtitle">Current Status: </span>{status}</p>
-      <p><span id="subtitle">Primary Material: </span>{primarymaterial}</p>
-      <p><span id="subtitle">Address: </span>{siteaddress}</p>
-      <p><span id="subtitle">Year of Installation: </span>{year}</p>
+      
+      <p><span id="subtitle"><b>Region Name: </b></span>{uppertiers}</p>
+      <p><span id="subtitle"><b>Upper Tier Municipality: </b></span>{uppertiers}</p>
+      <p><span id="subtitle"><b># of Upper Tier Layers: </b></span>{regLayer}</p>
+      <p><span id="subtitle"><b>Municipality Name: </b></span>{lowertier}</p>
+      <p><span id="subtitle"><b>#Lower Layers: </b></span>{munLayer}</p>
+
+      <p><span id="subtitle">Current Status: </span>{linkText}</p>
+
     {/if}
   </div>
 
-  <!-- <div class='map-overlay-dropdown'>
-      <form>
-                <label>The artwork status is:</label>
-                <select id="thelist">
-                    <option value="1">Show all</option>
-                    <option value="2">In place</option>
-                    <option value="3">No longer in place</option>
-                    <option value="4">Deaccessioned</option>
-                </select>
-      </form>
-     </div> -->
+
 </main>
 
 <style>
@@ -505,11 +360,6 @@
     color: #00a189;
     /* background-color: #F1C500; */
     background-color: #ffffff;
-    background: linear-gradient(135deg, #f1c50055 25%, transparent 25%) -4px 0/
-        8px 8px,
-      linear-gradient(225deg, #f1c50032 25%, transparent 25%) -4px 0/ 8px 8px,
-      linear-gradient(315deg, #f1c50055 25%, transparent 25%) 0px 0/ 8px 8px,
-      linear-gradient(45deg, #f1c50044 25%, #ffffff 25%) 0px 0/ 8px 8px;
     /* -webkit-text-stroke: 1px #6FC7EA; */
   }
 
@@ -521,11 +371,6 @@
     margin-top: 8px;
     /* margin-bottom: -4px; */
     color: #00a189;
-    background: linear-gradient(135deg, #f1c50055 25%, transparent 25%) -4px 0/
-        8px 8px,
-      linear-gradient(225deg, #f1c50032 25%, transparent 25%) -4px 0/ 8px 8px,
-      linear-gradient(315deg, #f1c50055 25%, transparent 25%) 0px 0/ 8px 8px,
-      linear-gradient(45deg, #f1c50044 25%, #ffffff 25%) 0px 0/ 8px 8px;
     /* -webkit-text-stroke: 1px #6FC7EA; */
   }
 
