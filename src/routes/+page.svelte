@@ -285,9 +285,13 @@
 
   const baseUrl =
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
-  let query = "";
+  let query = ""; //This is the input address from users. 
   let lat;
   let lon;
+  
+  //format user input
+
+  
 
   let results;
   const getResults = async () => {
@@ -461,7 +465,7 @@
     position: absolute;
     top: 145px;
     left: 10px;
-    width: 290px; /* Set a fixed width for the popup */
+    width: 30vw; /* Set a fixed width for the popup */
     max-height: calc(
       100% - 200px
     ); /* Calculate the max height based on viewport height */
@@ -502,13 +506,14 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    width: 300px;
+    width: 30vw;
     height: 105px;
     font-size: 17px;
     font-family: TradeGothicBold;
     background-color: rgb(254, 251, 249, 0.9);
     color: #1e3765;
     padding: 10px;
+    padding-right: 20px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   }
