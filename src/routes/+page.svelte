@@ -6,8 +6,8 @@
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
   import * as turf from "@turf/turf"; // this is for fitting the map boundary to GTA municipalities
-  import Geocoder from "../lib/geocoder.svelte";
-
+  import Select from "svelte-select";
+  
   let popupContent = false;
   function hidePopup() {
     popupContent = false;
@@ -282,27 +282,22 @@
   });
 
   // Geocoder for people to input their address and zoom to input address
-
   const baseUrl =
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
   let query = ""; //This is the input address from users. 
   let lat;
   let lon;
-  
-  //format user input
-
-  
-
   let results;
   const getResults = async () => {
     results = await fetch(baseUrl + query).then((res) => res.json());
     if (results.length > 0) {
+      console.log(query)
       //this is to remove the previous address point searched (if true)
       if (map.getSource(`address ${lon}`)) {
-        console.log(map.getLayer("address"))
+        //console.log(map.getLayer("address"))
         map.removeSource(`address ${lon}`);
         map.removeLayer(`address-layer ${lon}`);
-        console.log("Removed Source")
+        //console.log("Removed Source")
       }
       //get long - lat
       lat = +results[0].lat;
@@ -350,6 +345,8 @@
       alert("Sorry, no geocoding results for " + query);
     }
   };
+
+
 </script>
 
 <main>
@@ -372,6 +369,30 @@
     </p>
   </div>
 
+  <div class="bar" />
+
+  <div id="select-wrapper">
+      <Select
+          id="select"
+          items={cmaAll} 
+          value={cmaSelected}
+          clearable={false}
+          showChevron={true}
+          on:input={cmaSelectDropDown} 
+          --background="white"
+          --selected-item-color="#6D247A"
+          --height="22px"
+          --item-color="#6D247A"
+          --border-radius="0"
+          --border="1px"
+          --list-border-radius="0px"
+          --font-size="14.45px"
+          --max-height="30px"
+          --item-is-active-color="#0D534D"
+          --item-is-active-bg="#6FC7EA"
+      />
+  </div>
+
   <div class="popup">
     {#if popupContent}
       <div id="hide" on:click={hidePopup}>Click Here To Hide Content</div>
@@ -391,7 +412,7 @@
         >{munLayer}
       </p>
 
-      --------------------------------------------------
+      <!---Displaying the Data for Each Regional Level-------------->
 
       {#if regionalFilter.length != 0}
         <p><span id="subtitle"><b> Regional Flood Layers: </b></span></p>
@@ -431,6 +452,7 @@
         </p>
       {/each}
     {/if}
+    
     <input bind:value={query} placeholder="Search for a location" />
     <button on:click={getResults} disabled={query.length < 1}>Search</button>
   </div>
@@ -456,16 +478,16 @@
   #map {
     height: 100vh;
     width: 100%;
-    top: 0;
-    left: 0;
-    position: relative;
+    top: 0px;
+    left: 0px;
+    position: absolute;
   }
 
   .popup {
     position: absolute;
-    top: 145px;
-    left: 10px;
-    width: 30vw; /* Set a fixed width for the popup */
+    top: 165px;
+    left: 0px;
+    width: 25vw; /* Set a fixed width for the popup */
     max-height: calc(
       100% - 200px
     ); /* Calculate the max height based on viewport height */
@@ -504,9 +526,9 @@
 
   .legend {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 30vw;
+    top: 0px;
+    left: 0px;
+    width: 25vw;
     height: 105px;
     font-size: 17px;
     font-family: TradeGothicBold;

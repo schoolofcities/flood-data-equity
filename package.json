@@ -23,6 +23,7 @@
 		"d3-dsv": "^3.0.1",
 		"jquery": "^3.7.1",
 		"maplibre-gl": "^3.6.1",
+		"svelte-select": "^5.8.3",
 		"turf": "^3.0.14"
 	}
 }
