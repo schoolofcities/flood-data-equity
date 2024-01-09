@@ -7,8 +7,7 @@
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
   import * as turf from "@turf/turf"; // this is for fitting the map boundary to GTA municipalities
   import Select from "svelte-select";
-  import Papa from "papaparse";
-
+  
   let popupContent = false;
   function hidePopup() {
     popupContent = false;
@@ -27,36 +26,51 @@
   let municipalFilter;
   let regionalFilter;
 
-  // ============================functions=============================================
-  // this is for handling the imported data
-  async function handleCsvData(data, header) {
-    // Assuming 'MUNID' is the common key and find the index of regional and municipal layer count
-    const commonKeyIndex = header.indexOf("MUNID");
-    const munCountIndex = header.indexOf("MUN_LAYER");
-    const regionCountIndex = header.indexOf("REG_WIDE_LAYER");
-    console.log(header[munCountIndex])
-    console.log(header[regionCountIndex])
+  // ============================Import Data=============================================
+  async function fetchData() {
+    const municipalUrl =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
+    const conservationUrl =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=898330427&single=true&output=csv";
 
     try {
+      //this set of codes is for pulling data from google sheets
+      const response = await fetch(municipalUrl);
+      var csvData = await response.text();
+      global_csvData = csvParse(csvData); // this is for pulling the links later
+      console.log(global_csvData)
+      // fetch conservation authority
+      const response2 = await fetch(conservationUrl);
+      var conservation_csv = await response2.text();
+      conservation_csvData = csvParse(conservation_csv);
+
+      csvData = csvData.replace(/\r/g, "");
+      // Split the CSV data into an array of rows
+      const rows = csvData.split("\n");
+      // Parse CSV data into an array of arrays
+      const parsedData = rows.map((row) => row.split(","));
+      // Assuming 'MUNID' is the common key and find the index of regional and municipal layer count
+      const commonKeyIndex = parsedData[0].indexOf("MUNID"); // Adjust 'id' to your actual common key
+      const munCountIndex = parsedData[0].indexOf("MUN_LAYER");
+      const regionCountIndex = parsedData[0].indexOf("REG_WIDE_LAYER");
+      // Iterate through GeoJSON features
       municipalities.features.forEach((feature) => {
         // Find matching record in CSV data
-        const matchingRecord = data.find(
-          (obj) => obj.MUNID.toString() === feature.properties.MUNID,
+        const matchingRecord = parsedData.find(
+          (record) => record[commonKeyIndex] === feature.properties.MUNID,
         );
-
-        console.log(matchingRecord.MUNID);
-        console.log(matchingRecord.OFFICIAL_MUNICIPAL_NAME);
-        console.log(matchingRecord.REG_WIDE_LAYER);
-
         // If a match is found, update GeoJSON properties with CSV data
         if (matchingRecord) {
-          feature.properties[header[munCountIndex]] = parseInt(
-            matchingRecord.MUN_LAYER,
-          );
-          feature.properties[header[regionCountIndex]] = parseInt(
-            matchingRecord.REG_WIDE_LAYER,
-          );
-          console.log()
+          matchingRecord.forEach((value, index) => {
+            // Skip the common key, assuming 'id' is not in CSV data
+            if (index !== commonKeyIndex) {
+              // only add the regional and municipal layer count.
+              if (index == munCountIndex || index == regionCountIndex) {
+                feature.properties[parsedData[0][index]] = parseInt(value);
+              } else {
+              }
+            }
+          });
         }
       });
       return true;
@@ -66,7 +80,7 @@
       return false;
     }
   }
-
+  // ============================functions=============================================
   // this is a function for filtering data when clicked on the region/municipality
   function filtering(inputcsv, fieldName, machingrecord, filtered) {
     function filterMunicipality(inputcsv) {
@@ -86,31 +100,12 @@
     return filtered;
   }
 
-  // ============================Loading Data and Maps=============================================
+  // ============================Loading Maps=============================================
   onMount(async () => {
     // only load the maps when the google sheet data is loaded
-
-    // read the csvfile from google sheets
-    const csvLink =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
-
-    const response = await fetch(csvLink);
-    const csvData = await response.text();
-
-    const result = await new Promise((resolve) => {
-      Papa.parse(csvData, {
-        complete: (result) => resolve(result),
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-      });
-    });
-
-    const dataLoaded = await handleCsvData(result.data, result.meta.fields);
-    console.log(dataLoaded);
+    const dataLoaded = await fetchData();
 
     if (dataLoaded) {
-      console.log(municipalities)
       map = new maplibregl.Map({
         container: "map",
         style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -228,8 +223,7 @@
         });
       });
 
-      // Create pop-up 
-      /*
+      // Create pop-up
       const popup = new maplibregl.Popup({
         closeButton: true,
         closeOnClick: true,
@@ -245,12 +239,12 @@
       });
 
       map.on("click", "municipalities", (e) => {
-        
+        /*
         console.log(
           e.features[0].properties.OFFICIAL_MUNICIPAL_NAME,
           ", ",
           e.features[0].properties.MUN_LAYER_COUNT,
-        );
+        );*/
 
         municipalFilter = filtering(
           global_csvData,
@@ -283,21 +277,21 @@
           e.features[0].properties,
           conservationFilter,
         );
-      });*/
+      });
     }
   });
 
   // Geocoder for people to input their address and zoom to input address
   const baseUrl =
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
-  let query = ""; //This is the input address from users.
+  let query = ""; //This is the input address from users. 
   let lat;
   let lon;
   let results;
   const getResults = async () => {
     results = await fetch(baseUrl + query).then((res) => res.json());
     if (results.length > 0) {
-      console.log(query);
+      console.log(query)
       //this is to remove the previous address point searched (if true)
       if (map.getSource(`address ${lon}`)) {
         //console.log(map.getLayer("address"))
@@ -326,9 +320,10 @@
         // this animation is considered essential with respect to prefers-reduced-motion
         essential: true,
       });
-
+      
+      
       // Add a symbol layer
-      console.log("Add Source");
+      console.log("Add Source")
       // add point to show the searched address
       map.addSource(`address ${lon}`, {
         type: "geojson",
@@ -350,6 +345,8 @@
       alert("Sorry, no geocoding results for " + query);
     }
   };
+
+
 </script>
 
 <main>
@@ -395,7 +392,7 @@
           --item-is-active-bg="#6FC7EA"
       />
   </div>-->
-
+  
   <div class="popup">
     {#if popupContent}
       <div id="hide" on:click={hidePopup}>Click Here To Hide Content</div>
@@ -455,7 +452,7 @@
         </p>
       {/each}
     {/if}
-
+    
     <input bind:value={query} placeholder="Search for a location" />
     <button on:click={getResults} disabled={query.length < 1}>Search</button>
   </div>
