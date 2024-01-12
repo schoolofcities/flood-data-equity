@@ -34,8 +34,6 @@
     const commonKeyIndex = header.indexOf("MUNID");
     const munCountIndex = header.indexOf("MUN_LAYER");
     const regionCountIndex = header.indexOf("REG_WIDE_LAYER");
-    console.log(header[munCountIndex])
-    console.log(header[regionCountIndex])
 
     try {
       municipalities.features.forEach((feature) => {
@@ -43,10 +41,6 @@
         const matchingRecord = data.find(
           (obj) => obj.MUNID.toString() === feature.properties.MUNID,
         );
-
-        console.log(matchingRecord.MUNID);
-        console.log(matchingRecord.OFFICIAL_MUNICIPAL_NAME);
-        console.log(matchingRecord.REG_WIDE_LAYER);
 
         // If a match is found, update GeoJSON properties with CSV data
         if (matchingRecord) {
@@ -56,7 +50,6 @@
           feature.properties[header[regionCountIndex]] = parseInt(
             matchingRecord.REG_WIDE_LAYER,
           );
-          console.log()
         }
       });
       return true;
@@ -68,22 +61,80 @@
   }
 
   // this is a function for filtering data when clicked on the region/municipality
-  function filtering(inputcsv, fieldName, machingrecord, filtered) {
+  function filtering(inputcsv, fieldName, matchingRecord, filtered) {
     function filterMunicipality(inputcsv) {
       if (fieldName == "UPPER_TIER_MUNICIPALITY") {
         return (
-          inputcsv[fieldName] === machingrecord[fieldName] &&
+          inputcsv[fieldName] === matchingRecord[fieldName] &&
           inputcsv["OFFICIAL_MUNICIPAL_NAME"] == ""
         );
       } else {
         return (
-          inputcsv[fieldName] === machingrecord[fieldName] &&
+          inputcsv[fieldName] === matchingRecord[fieldName] &&
           inputcsv[fieldName] != ""
         );
       }
     }
     filtered = inputcsv.filter(filterMunicipality);
     return filtered;
+  }
+  // handle lookup table info
+
+  async function handleLookup(data, header) {
+    /*this function will
+    1. process the read csv to create a list of unique conservation authority, municipality, and regional municipality names
+        this is for the drop down menu
+    2. return the lists and true*/
+    try {
+      console.log("trueeee");
+      let conservationDropList = [];
+        let regionDropList = [];
+        let municipalDropList = [];
+      data.forEach((row) => {
+        
+        if (!conservationDropList.includes(row["LEGAL_NAME"])) {
+          conservationDropList.push(row["LEGAL_NAME"]);
+        }
+        if (!regionDropList.includes(row["UPPER_TI_1"])) {
+          regionDropList.push(row["UPPER_TI_1"]);
+        }
+        if (!municipalDropList.includes(row["OFFICIAL_M"])) {
+          municipalDropList.push(row["OFFICIAL_M"]);
+        } 
+      });
+      console.log(conservationDropList)
+      console.log(regionDropList)
+      console.log(municipalDropList)
+      //console.log(regionList)*/})
+      return [true, conservationDropList, regionDropList, municipalDropList];
+    } catch (error) {
+      console.log("Noooo");
+      return false;
+    }
+  }
+
+  function handleFilter(data, header, filter) {
+    /*the following code takes in a filter value and filter the lookup table to generate a list of jurisdictions based on 
+      the input filter*/
+    let conservationList = [];
+    let regionList = [];
+    let municipalList = [];
+    data.forEach((obj) => {
+      console.log(obj["OFFICIAL_M"]);
+      if (obj["OFFICIAL_M"] === "CITY OF BRAMPTON") {
+        console.log(obj);
+        // only push if the value is not already in the conservation list
+        if (!conservationList.includes(obj["LEGAL_NAME"])) {
+          conservationList.push(obj["LEGAL_NAME"]);
+        }
+        // only push if the value is not already in the region list
+        if (!regionList.includes(obj["UPPER_TI_1"])) {
+          regionList.push(obj["UPPER_TI_1"]);
+        }
+      } else if (obj["OFFICIAL_M"] === "CITY OF VAUGHAN") {
+        console.log(obj);
+      }
+    });
   }
 
   // ============================Loading Data and Maps=============================================
@@ -107,10 +158,27 @@
     });
 
     const dataLoaded = await handleCsvData(result.data, result.meta.fields);
-    console.log(dataLoaded);
+
+    //reading csv from the lookup table, this table is to help select info.
+
+    let lookupTable = "src/data/lookuptable.csv";
+
+    const response2 = await fetch(lookupTable);
+    const csvData2 = await response2.text();
+    const result2 = await new Promise((resolve) => {
+      Papa.parse(csvData2, {
+        complete: (results) => resolve(results),
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+      });
+    });
+
+    let lup = await handleLookup(result2.data, result2.meta.fields);
+    console.log(lup[1]);
 
     if (dataLoaded) {
-      console.log(municipalities)
+      console.log(municipalities);
       map = new maplibregl.Map({
         container: "map",
         style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -144,18 +212,22 @@
             break;
           }
         }
+
         map.addSource("conservationAuthority", {
           type: "geojson",
           data: conservationAuthority,
         });
+
         map.addSource("municipalities", {
           type: "geojson",
           data: municipalities,
         });
+
         map.addSource("uppertier", {
           type: "geojson",
           data: uppertier,
         });
+
         map.addLayer({
           id: "conservationAuthority-fill",
           type: "fill",
@@ -228,8 +300,8 @@
         });
       });
 
-      // Create pop-up 
-      /*
+      // Create pop-up
+
       const popup = new maplibregl.Popup({
         closeButton: true,
         closeOnClick: true,
@@ -245,7 +317,6 @@
       });
 
       map.on("click", "municipalities", (e) => {
-        
         console.log(
           e.features[0].properties.OFFICIAL_MUNICIPAL_NAME,
           ", ",
@@ -253,13 +324,13 @@
         );
 
         municipalFilter = filtering(
-          global_csvData,
+          result.data,
           "OFFICIAL_MUNICIPAL_NAME",
           e.features[0].properties,
           municipalFilter,
         );
         regionalFilter = filtering(
-          global_csvData,
+          result.data,
           "UPPER_TIER_MUNICIPALITY",
           e.features[0].properties,
           regionalFilter,
@@ -283,7 +354,7 @@
           e.features[0].properties,
           conservationFilter,
         );
-      });*/
+      });
     }
   });
 
@@ -488,7 +559,7 @@
 
   .popup {
     position: absolute;
-    top: 165px;
+    top: 53vh;
     left: 0px;
     width: 25vw; /* Set a fixed width for the popup */
     max-height: calc(
@@ -532,7 +603,7 @@
     top: 0px;
     left: 0px;
     width: 25vw;
-    height: 105px;
+    height: 50vh;
     font-size: 17px;
     font-family: TradeGothicBold;
     background-color: rgb(254, 251, 249, 0.9);
