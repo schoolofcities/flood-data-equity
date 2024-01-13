@@ -88,10 +88,9 @@
     try {
       console.log("trueeee");
       let conservationDropList = [];
-        let regionDropList = [];
-        let municipalDropList = [];
+      let regionDropList = [];
+      let municipalDropList = [];
       data.forEach((row) => {
-        
         if (!conservationDropList.includes(row["LEGAL_NAME"])) {
           conservationDropList.push(row["LEGAL_NAME"]);
         }
@@ -100,11 +99,11 @@
         }
         if (!municipalDropList.includes(row["OFFICIAL_M"])) {
           municipalDropList.push(row["OFFICIAL_M"]);
-        } 
+        }
       });
-      console.log(conservationDropList)
-      console.log(regionDropList)
-      console.log(municipalDropList)
+      console.log(conservationDropList);
+      console.log(regionDropList);
+      console.log(municipalDropList);
       //console.log(regionList)*/})
       return [true, conservationDropList, regionDropList, municipalDropList];
     } catch (error) {
@@ -136,11 +135,16 @@
       }
     });
   }
+  let cmaAll;
+  let cmaSelected;
+  let cmaSelectDropDown;
 
+  let regionList = [];
+  let conservationList = [];
+  let municipalList = [];
   // ============================Loading Data and Maps=============================================
   onMount(async () => {
     // only load the maps when the google sheet data is loaded
-
     // read the csvfile from google sheets
     const csvLink =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
@@ -158,24 +162,6 @@
     });
 
     const dataLoaded = await handleCsvData(result.data, result.meta.fields);
-
-    //reading csv from the lookup table, this table is to help select info.
-
-    let lookupTable = "src/data/lookuptable.csv";
-
-    const response2 = await fetch(lookupTable);
-    const csvData2 = await response2.text();
-    const result2 = await new Promise((resolve) => {
-      Papa.parse(csvData2, {
-        complete: (results) => resolve(results),
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-      });
-    });
-
-    let lup = await handleLookup(result2.data, result2.meta.fields);
-    console.log(lup[1]);
 
     if (dataLoaded) {
       console.log(municipalities);
@@ -358,6 +344,31 @@
     }
   });
 
+  async function lookingUp() {
+    //reading csv from the lookup table, this table is to help select info.
+
+    let lookupTable = "src/data/lookuptable.csv";
+
+    const response2 = await fetch(lookupTable);
+    const csvData2 = await response2.text();
+    const result2 = await new Promise((resolve) => {
+      Papa.parse(csvData2, {
+        complete: (results) => resolve(results),
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+      });
+    });
+
+    let lup = await handleLookup(result2.data, result2.meta.fields);
+
+    regionList = lup[2];
+    conservationList = lup[1];
+    municipalList = lup[3];
+    console.log(municipalList)
+  }
+  
+
   // Geocoder for people to input their address and zoom to input address
   const baseUrl =
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
@@ -442,30 +453,30 @@
       <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
     </p>
   </div>
-  <!--
+
   <div class="bar" />
-  
+
   <div id="select-wrapper">
-      <Select
-          id="select"
-          items={cmaAll} 
-          value={cmaSelected}
-          clearable={false}
-          showChevron={true}
-          on:input={cmaSelectDropDown} 
-          --background="white"
-          --selected-item-color="#6D247A"
-          --height="22px"
-          --item-color="#6D247A"
-          --border-radius="0"
-          --border="1px"
-          --list-border-radius="0px"
-          --font-size="14.45px"
-          --max-height="30px"
-          --item-is-active-color="#0D534D"
-          --item-is-active-bg="#6FC7EA"
-      />
-  </div>-->
+    <Select
+      id="select"
+      items={regionList}
+      value={cmaSelected}
+      clearable={false}
+      showChevron={true}
+      on:input={municipalList}
+      --background="white"
+      --selected-item-color="#6D247A"
+      --height="22px"
+      --item-color="#6D247A"
+      --border-radius="0"
+      --border="1px"
+      --list-border-radius="0px"
+      --font-size="14.45px"
+      --max-height="30px"
+      --item-is-active-color="#0D534D"
+      --item-is-active-bg="#6FC7EA"
+    />
+  </div>
 
   <div class="popup">
     {#if popupContent}
@@ -576,7 +587,17 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     overflow-x: hidden;
   }
-
+  .bar {
+    height: 1px;
+    width: 15vw;
+    top: 20vh;
+    left: 0px;
+    background-color: var(--brandDarkBlue);
+    padding: 0px;
+    margin: 0px;
+    margin-left: 5px;
+    opacity: 0.25;
+  }
   #hide {
     position: absolute;
     height: 15px;
@@ -603,7 +624,7 @@
     top: 0px;
     left: 0px;
     width: 25vw;
-    height: 50vh;
+    height: 10vh;
     font-size: 17px;
     font-family: TradeGothicBold;
     background-color: rgb(254, 251, 249, 0.9);
