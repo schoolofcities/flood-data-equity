@@ -6,9 +6,15 @@
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
   import * as turf from "@turf/turf"; // this is for fitting the map boundary to GTA municipalities
+  import lookupTable from "../data/lookupTable.json";
   import Select from "svelte-select";
   import Papa from "papaparse";
 
+  let isContentVisible = true;
+  const csvLink =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
+
+  // loads a list of unique jurisdictions (i.e. municipality, region, conservation authority)
   let popupContent = false;
   function hidePopup() {
     popupContent = false;
@@ -26,8 +32,82 @@
   let conservationFilter;
   let municipalFilter;
   let regionalFilter;
-
+  let selectedJuristidction = "";
   // ============================functions=============================================
+  // loading lookuptable to create unique jurisdiction lists.
+  function jurisDictionList(jurisdiction) {
+    let filteredList = [];
+    for (let i = 0; i < lookupTable.length; i++) {
+      if (!filteredList.includes(lookupTable[i][jurisdiction])) {
+        if (!lookupTable[i][jurisdiction] == "") {
+          filteredList.push(lookupTable[i][jurisdiction]);
+        }
+      }
+    }
+    return filteredList;
+  }
+
+  function governmentList(jurisdiction, csv) {
+    let region = [];
+    let conservation = [];
+    let municipal = [];
+
+    if (jurisdiction.startsWith("Regional")) {
+      for (let i = 0; i < lookupTable.length; i++) {
+        if (lookupTable[i]["Regional_Municipality"] === jurisdiction) {
+          if (!municipal.includes(lookupTable[i]["Municipality"])) {
+            municipal.push(lookupTable[i]["Municipality"]);
+          }
+          if (
+            !conservation.includes(lookupTable[i]["Conservation_Authority"])
+          ) {
+            conservation.push(lookupTable[i]["Conservation_Authority"]);
+          }
+        }
+      }
+      return ["UPPER_TIER_MUNICIPALITY", municipal, conservation];
+    } else if (jurisdiction.endsWith("Authority")) {
+      for (let i = 0; i < lookupTable.length; i++) {
+        if (lookupTable[i]["Conservation_Authority"] === jurisdiction) {
+          console.log(lookupTable[i]["Conservation_Authority"]);
+          if (!region.includes(lookupTable[i]["Regional_Municipality"])) {
+            region.push(lookupTable[i]["Regional_Municipality"]);
+          }
+          if (!municipal.includes(lookupTable[i]["Municipality"])) {
+            municipal.push(lookupTable[i]["Municipality"]);
+          }
+        }
+      }
+      return ["CONSERVATION_AUTHORITY", municipal, region];
+    } else {
+      for (let i = 0; i < lookupTable.length; i++) {
+        if (lookupTable[i]["Municipality"] === jurisdiction) {
+          if (!region.includes(lookupTable[i]["Regional_Municipality"])) {
+            region.push(lookupTable[i]["Regional_Municipality"]);
+
+          }
+          if (
+            !conservation.includes(lookupTable[i]["Conservation_Authority"])
+          ) {
+            conservation.push(lookupTable[i]["Conservation_Authority"]);
+          }
+        }
+      }
+      filtering(csv, jurisdictionList)
+      filtering(csv, jurisdictionList)
+    }
+  }
+
+  function filtering(csvResult, jurisdictionList) {
+    let filteredResults = [];
+    for (let i = 0; i < jurisdictionList.length; i++) {
+      for (let i = 0; i < csvResult.length; i++) {
+
+      }
+    }
+  }
+  //findGovernmentLevels("City of Hamilton");
+
   // this is for handling the imported data
   async function handleCsvData(data, header) {
     // Assuming 'MUNID' is the common key and find the index of regional and municipal layer count
@@ -41,7 +121,6 @@
         const matchingRecord = data.find(
           (obj) => obj.MUNID.toString() === feature.properties.MUNID,
         );
-
         // If a match is found, update GeoJSON properties with CSV data
         if (matchingRecord) {
           feature.properties[header[munCountIndex]] = parseInt(
@@ -61,6 +140,7 @@
   }
 
   // this is a function for filtering data when clicked on the region/municipality
+  /*
   function filtering(inputcsv, fieldName, matchingRecord, filtered) {
     function filterMunicipality(inputcsv) {
       if (fieldName == "UPPER_TIER_MUNICIPALITY") {
@@ -75,83 +155,50 @@
         );
       }
     }
+
     filtered = inputcsv.filter(filterMunicipality);
     return filtered;
   }
-  // handle lookup table info
+*/
+  //findGovernmentLevels(jurisdiction)[0],
 
-  async function handleLookup(data, header) {
-    /*this function will
-    1. process the read csv to create a list of unique conservation authority, municipality, and regional municipality names
-        this is for the drop down menu
-    2. return the lists and true*/
-    try {
-      console.log("trueeee");
-      let conservationDropList = [];
-      let regionDropList = [];
-      let municipalDropList = [];
-      data.forEach((row) => {
-        if (!conservationDropList.includes(row["LEGAL_NAME"])) {
-          conservationDropList.push(row["LEGAL_NAME"]);
-        }
-        if (!regionDropList.includes(row["UPPER_TI_1"])) {
-          regionDropList.push(row["UPPER_TI_1"]);
-        }
-        if (!municipalDropList.includes(row["OFFICIAL_M"])) {
-          municipalDropList.push(row["OFFICIAL_M"]);
-        }
-      });
-      console.log(conservationDropList);
-      console.log(regionDropList);
-      console.log(municipalDropList);
-      //console.log(regionList)*/})
-      return [true, conservationDropList, regionDropList, municipalDropList];
-    } catch (error) {
-      console.log("Noooo");
-      return false;
-    }
+  function selectDropdown(e) {
+    governmentList(e.detail.value);
+    //cmaSelectMapUpdate(e.detail.value);
   }
 
-  function handleFilter(data, header, filter) {
-    /*the following code takes in a filter value and filter the lookup table to generate a list of jurisdictions based on 
-      the input filter*/
-    let conservationList = [];
-    let regionList = [];
-    let municipalList = [];
-    data.forEach((obj) => {
-      console.log(obj["OFFICIAL_M"]);
-      if (obj["OFFICIAL_M"] === "CITY OF BRAMPTON") {
-        console.log(obj);
-        // only push if the value is not already in the conservation list
-        if (!conservationList.includes(obj["LEGAL_NAME"])) {
-          conservationList.push(obj["LEGAL_NAME"]);
-        }
-        // only push if the value is not already in the region list
-        if (!regionList.includes(obj["UPPER_TI_1"])) {
-          regionList.push(obj["UPPER_TI_1"]);
-        }
-      } else if (obj["OFFICIAL_M"] === "CITY OF VAUGHAN") {
-        console.log(obj);
-      }
-    });
+  function cmaSelectMapUpdate(cmaname) {
+    selectedJuristidction = cmaname;
+
+    let filteredData = cmaData.filter(
+      (item) => item.CMANAME === selectedJuristidction,
+    )[0];
+
+    cmauidSelected = filteredData.CMAUID;
+    let cmaX = filteredData.x;
+    let cmaY = filteredData.y;
+
+    map.setZoom(9);
+    map.setBearing(0);
+    map.setPitch(0);
+    map.panTo([cmaX, cmaY]);
+
+    const cmaFilter = [
+      "match",
+      ["get", "CMAUID"],
+      [cmauidSelected.toString()],
+      true,
+      false,
+    ];
+    map.setFilter("metro-mindset-csd-2021-border", cmaFilter);
+    map.setFilter("metro-mindset-cma-2021-border", cmaFilter);
+    map.setFilter("metro-mindset-cma-2021-background", cmaFilter);
+    map.setFilter("municipalLabels", cmaFilter);
   }
-  let cmaAll;
-  let cmaSelected;
-  let cmaSelectDropDown;
 
-  let regionList = [];
-  let conservationList = [];
-  let municipalList = [];
-  // ============================Loading Data and Maps=============================================
-  onMount(async () => {
-    // only load the maps when the google sheet data is loaded
-    // read the csvfile from google sheets
-    const csvLink =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
-
+  async function processCsv(csvLink) {
     const response = await fetch(csvLink);
     const csvData = await response.text();
-
     const result = await new Promise((resolve) => {
       Papa.parse(csvData, {
         complete: (result) => resolve(result),
@@ -160,8 +207,26 @@
         skipEmptyLines: true,
       });
     });
+    return result;
+  }
 
-    const dataLoaded = await handleCsvData(result.data, result.meta.fields);
+  // ============================Loading Data and Maps=============================================
+
+  let conservationList = jurisDictionList("Conservation_Authority");
+  let regionList = jurisDictionList("Regional_Municipality");
+  let municipalList = jurisDictionList("Municipality");
+
+  onMount(async () => {
+    // only load the maps when the google sheet data is loaded
+    // read the csvfile from google sheets
+
+    const csv = await processCsv(csvLink);
+
+    for (let i = 0; i < csv.data.length; i++) {
+      console.log(csv.data[i].MUNID);
+    }
+
+    const dataLoaded = await handleCsvData(csv.data, csv.meta.fields);
 
     if (dataLoaded) {
       console.log(municipalities);
@@ -233,18 +298,20 @@
             "fill-color": [
               "step",
               ["get", "MUN_LAYER"], // Property in your GeoJSON data containing the values
-              "#FF0000",
+              "#a9d6e5",
               2, // Red for values 0 or lower
-              "#00FF00",
+              "#89c2d9",
+              3,
+              "#2c7da0",
               4, // Green for values between 0 and 50
-              "yellow",
+              "#2a6f97",
               7, // yellow for 20-50
-              "#0000FF",
+              "#013a63",
               10, // Blue for values 50 or higher
               /* Add more stops and colors as needed */
               "#FFFFFF",
             ],
-            "fill-opacity": 0.3,
+            "fill-opacity": 0.7,
           },
         });
 
@@ -287,7 +354,6 @@
       });
 
       // Create pop-up
-
       const popup = new maplibregl.Popup({
         closeButton: true,
         closeOnClick: true,
@@ -343,31 +409,6 @@
       });
     }
   });
-
-  async function lookingUp() {
-    //reading csv from the lookup table, this table is to help select info.
-
-    let lookupTable = "src/data/lookuptable.csv";
-
-    const response2 = await fetch(lookupTable);
-    const csvData2 = await response2.text();
-    const result2 = await new Promise((resolve) => {
-      Papa.parse(csvData2, {
-        complete: (results) => resolve(results),
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-      });
-    });
-
-    let lup = await handleLookup(result2.data, result2.meta.fields);
-
-    regionList = lup[2];
-    conservationList = lup[1];
-    municipalList = lup[3];
-    console.log(municipalList)
-  }
-  
 
   // Geocoder for people to input their address and zoom to input address
   const baseUrl =
@@ -436,7 +477,6 @@
 
 <main>
   <div id="map" />
-
   <div class="legend">
     <h1>Flood Data Equity</h1>
     <div class="legend-item">
@@ -452,33 +492,91 @@
       and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
       <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
     </p>
-  </div>
+    <p>
+      <i>Select A Local Municipality:</i>
+    </p>
+    <div class="bar" />
 
-  <div class="bar" />
+    <div id="select-wrapper">
+      <Select
+        id="select"
+        items={municipalList}
+        value={selectedJuristidction}
+        clearable={false}
+        showChevron={true}
+        on:input={selectDropdown}
+        --background="white"
+        --selected-item-color="#6D247A"
+        --width="25vw"
+        --height="22px"
+        --item-color="#6D247A"
+        --border-radius="0"
+        --border="1px"
+        --list-border-radius="0px"
+        --font-size="14.45px"
+        --max-height="30px"
+        --item-is-active-color="#0D534D"
+        --item-is-active-bg="#6FC7EA"
+      />
+    </div>
+    <div class="bar" />
+    <p>
+      <i>Select A Regional Municipality:</i>
+    </p>
+    <div class="bar" />
 
-  <div id="select-wrapper">
-    <Select
-      id="select"
-      items={regionList}
-      value={cmaSelected}
-      clearable={false}
-      showChevron={true}
-      on:input={municipalList}
-      --background="white"
-      --selected-item-color="#6D247A"
-      --height="22px"
-      --item-color="#6D247A"
-      --border-radius="0"
-      --border="1px"
-      --list-border-radius="0px"
-      --font-size="14.45px"
-      --max-height="30px"
-      --item-is-active-color="#0D534D"
-      --item-is-active-bg="#6FC7EA"
-    />
-  </div>
+    <div id="select-wrapper">
+      <Select
+        id="select"
+        items={regionList}
+        value={selectedJuristidction}
+        clearable={false}
+        showChevron={true}
+        on:input={selectDropdown}
+        --background="white"
+        --selected-item-color="#6D247A"
+        --width="25vw"
+        --height="22px"
+        --item-color="#6D247A"
+        --border-radius="0"
+        --border="1px"
+        --list-border-radius="0px"
+        --font-size="14.45px"
+        --max-height="30px"
+        --item-is-active-color="#0D534D"
+        --item-is-active-bg="#6FC7EA"
+      />
+    </div>
+    <div class="bar" />
+    <p>
+      <i>Select A Conservation Authority:</i>
+    </p>
+    <div class="bar" />
 
-  <div class="popup">
+    <div id="select-wrapper">
+      <Select
+        id="select"
+        items={conservationList}
+        value={selectedJuristidction}
+        clearable={false}
+        showChevron={true}
+        on:input={selectDropdown}
+        --background="white"
+        --selected-item-color="#6D247A"
+        --width="25vw"
+        --height="25px"
+        --item-color="#6D247A"
+        --border-radius="0"
+        --border="1px"
+        --list-border-radius="0px"
+        --font-size="14.45px"
+        --max-height="30px"
+        --item-is-active-color="#0D534D"
+        --item-is-active-bg="#6FC7EA"
+      />
+    </div>
+    <div class="bar" />
+
     {#if popupContent}
       <div id="hide" on:click={hidePopup}>Click Here To Hide Content</div>
 
@@ -537,6 +635,8 @@
         </p>
       {/each}
     {/if}
+    <p></p>
+    <p></p>
 
     <input bind:value={query} placeholder="Search for a location" />
     <button on:click={getResults} disabled={query.length < 1}>Search</button>
@@ -589,13 +689,11 @@
   }
   .bar {
     height: 1px;
-    width: 15vw;
-    top: 20vh;
-    left: 0px;
+    width: 20px;
     background-color: var(--brandDarkBlue);
     padding: 0px;
     margin: 0px;
-    margin-left: 5px;
+    margin-left: 0px;
     opacity: 0.25;
   }
   #hide {
@@ -624,7 +722,7 @@
     top: 0px;
     left: 0px;
     width: 25vw;
-    height: 10vh;
+    height: 100vh;
     font-size: 17px;
     font-family: TradeGothicBold;
     background-color: rgb(254, 251, 249, 0.9);
@@ -670,7 +768,7 @@
 
   p {
     font-family: RobotoRegular;
-    font-size: 16px;
+    font-size: 14px;
     opacity: 1;
     color: #1e3765;
   }

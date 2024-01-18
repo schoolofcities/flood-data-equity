@@ -1,0 +1,457 @@
+[
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "City of Brampton",
+    "MUNID": 21010,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Brampton", 
+    "MUNID": 21010,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "City of Brampton",
+    "MUNID": 21010,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Brampton",
+    "MUNID": 21010,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Hamilton Region Conservation Authority",
+    "CA_ID": 19,
+    "Municipality": "City of Burlington",
+    "MUNID": 24002,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Halton Region Conservation Authority",
+    "CA_ID": 16,
+    "Municipality": "City of Burlington",
+    "MUNID": 24002,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Hamilton Region Conservation Authority",
+    "CA_ID": 19,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Grand River Conservation Authority",
+    "CA_ID": 32,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Halton Region Conservation Authority",
+    "CA_ID": 16,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Niagara Peninsula Conservation Authority",
+    "CA_ID": 20,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Hamilton Region Conservation Authority",
+    "CA_ID": 19,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Niagara Peninsula Conservation Authority",
+    "CA_ID": 20,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Grand River Conservation Authority",
+    "CA_ID": 32,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Niagara Peninsula Conservation Authority",
+    "CA_ID": 20,
+    "Municipality": "City of Hamilton",
+    "MUNID": 25005,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Markham",
+    "MUNID": 19036,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Halton Region Conservation Authority",
+    "CA_ID": 16,
+    "Municipality": "City of Mississauga",
+    "MUNID": 21005,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "City of Mississauga",
+    "MUNID": 21005,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Mississauga",
+    "MUNID": 21005,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "City of Mississauga",
+    "MUNID": 21005,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Mississauga",
+    "MUNID": 21005,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Kawartha Region Conservation Authority",
+    "CA_ID": 14,
+    "Municipality": "City of Oshawa",
+    "MUNID": 18013,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Central Lake Ontario Conservation Authority",
+    "CA_ID": 33,
+    "Municipality": "City of Oshawa",
+    "MUNID": 18013,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Kawartha Region Conservation Authority",
+    "CA_ID": 14,
+    "Municipality": "City of Oshawa",
+    "MUNID": 18013,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Central Lake Ontario Conservation Authority",
+    "CA_ID": 33,
+    "Municipality": "City of Oshawa",
+    "MUNID": 18013,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Central Lake Ontario Conservation Authority",
+    "CA_ID": 33,
+    "Municipality": "City of Pickering",
+    "MUNID": 18001,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Pickering",
+    "MUNID": 18001,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "City of Richmond Hill",
+    "MUNID": 19038,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Richmond Hill",
+    "MUNID": 19038,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "City of Toronto",
+    "MUNID": 20002,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Toronto",
+    "MUNID": 20002,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Toronto",
+    "MUNID": 20002,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "City of Toronto",
+    "MUNID": 20002,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Toronto",
+    "MUNID": 20002,
+    "Regional_Municipality": ""
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "City of Vaughan",
+    "MUNID": 19028,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Central Lake Ontario Conservation Authority",
+    "CA_ID": 33,
+    "Municipality": "Town of Ajax",
+    "MUNID": 18005,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Town of Ajax",
+    "MUNID": 18005,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Town of Aurora",
+    "MUNID": 19046,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Town of Aurora",
+    "MUNID": 19046,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Nottawasaga Valley Conservation Authority",
+    "CA_ID": 26,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Nottawasaga Valley Conservation Authority",
+    "CA_ID": 26,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Nottawasaga Valley Conservation Authority",
+    "CA_ID": 26,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Town of Caledon",
+    "MUNID": 21024,
+    "Regional_Municipality": "Regional Municipality Of Peel"
+  },
+  {
+    "Conservation_Authority": "Grand River Conservation Authority",
+    "CA_ID": 32,
+    "Municipality": "Town of Halton Hills",
+    "MUNID": 24015,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Halton Region Conservation Authority",
+    "CA_ID": 16,
+    "Municipality": "Town of Halton Hills",
+    "MUNID": 24015,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "Town of Halton Hills",
+    "MUNID": 24015,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Grand River Conservation Authority",
+    "CA_ID": 32,
+    "Municipality": "Town of Milton",
+    "MUNID": 24009,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Halton Region Conservation Authority",
+    "CA_ID": 16,
+    "Municipality": "Town of Milton",
+    "MUNID": 24009,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "Town of Milton",
+    "MUNID": 24009,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Town of Newmarket",
+    "MUNID": 19048,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Halton Region Conservation Authority",
+    "CA_ID": 16,
+    "Municipality": "Town of Oakville",
+    "MUNID": 24001,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Credit Valley Conservation Authority",
+    "CA_ID": 15,
+    "Municipality": "Town of Oakville",
+    "MUNID": 24001,
+    "Regional_Municipality": "Regional Municipality Of Halton"
+  },
+  {
+    "Conservation_Authority": "Central Lake Ontario Conservation Authority",
+    "CA_ID": 33,
+    "Municipality": "Town of Whitby",
+    "MUNID": 18009,
+    "Regional_Municipality": "Regional Municipality Of Durham"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Town of Whitchurch-Stouffville",
+    "MUNID": 19044,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Town of Whitchurch-Stouffville",
+    "MUNID": 19044,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Township of King",
+    "MUNID": 19049,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Nottawasaga Valley Conservation Authority",
+    "CA_ID": 26,
+    "Municipality": "Township of King",
+    "MUNID": 19049,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Toronto and Region Conservation Authority",
+    "CA_ID": 34,
+    "Municipality": "Township of King",
+    "MUNID": 19049,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Lake Simcoe Region Conservation Authority",
+    "CA_ID": 27,
+    "Municipality": "Township of King",
+    "MUNID": 19049,
+    "Regional_Municipality": "Regional Municipality Of York"
+  },
+  {
+    "Conservation_Authority": "Nottawasaga Valley Conservation Authority",
+    "CA_ID": 26,
+    "Municipality": "Township of King",
+    "MUNID": 19049,
+    "Regional_Municipality": "Regional Municipality Of York"
+  }
+]
