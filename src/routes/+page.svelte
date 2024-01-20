@@ -13,14 +13,16 @@
   let isContentVisible = true;
   const csvLink =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
-
+  const region =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=193533627&single=true&output=csv";
+  const consAuth =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=898330427&single=true&output=csv";
   // loads a list of unique jurisdictions (i.e. municipality, region, conservation authority)
   let popupContent = false;
   function hidePopup() {
     popupContent = false;
   }
-
-  let global_csvData;
+  let jurisdictionInfo;
   let conservation_csvData;
   let map;
   let title; // the title of the popup
@@ -33,82 +35,28 @@
   let municipalFilter;
   let regionalFilter;
   let selectedJuristidction = "";
+  let municipalData = [] // storing municipal data and links
+  let regionalData = [] // storing regional data and links
+  let conservationData = [] // storing conservation authority data and links
+  let municipal; 
+  let c = ['a','b', 'c']
   // ============================functions=============================================
-  // loading lookuptable to create unique jurisdiction lists.
-  function jurisDictionList(jurisdiction) {
-    let filteredList = [];
-    for (let i = 0; i < lookupTable.length; i++) {
-      if (!filteredList.includes(lookupTable[i][jurisdiction])) {
-        if (!lookupTable[i][jurisdiction] == "") {
-          filteredList.push(lookupTable[i][jurisdiction]);
-        }
-      }
-    }
-    return filteredList;
-  }
 
-  function governmentList(jurisdiction, csv) {
-    let region = [];
-    let conservation = [];
-    let municipal = [];
+  onMount(async ()=> {
+    municipalData = await processCsv(csvLink)
+    regionalData = await processCsv(region)
+    conservationData = await processCsv(consAuth)
 
-    if (jurisdiction.startsWith("Regional")) {
-      for (let i = 0; i < lookupTable.length; i++) {
-        if (lookupTable[i]["Regional_Municipality"] === jurisdiction) {
-          if (!municipal.includes(lookupTable[i]["Municipality"])) {
-            municipal.push(lookupTable[i]["Municipality"]);
-          }
-          if (
-            !conservation.includes(lookupTable[i]["Conservation_Authority"])
-          ) {
-            conservation.push(lookupTable[i]["Conservation_Authority"]);
-          }
-        }
-      }
-      return ["UPPER_TIER_MUNICIPALITY", municipal, conservation];
-    } else if (jurisdiction.endsWith("Authority")) {
-      for (let i = 0; i < lookupTable.length; i++) {
-        if (lookupTable[i]["Conservation_Authority"] === jurisdiction) {
-          console.log(lookupTable[i]["Conservation_Authority"]);
-          if (!region.includes(lookupTable[i]["Regional_Municipality"])) {
-            region.push(lookupTable[i]["Regional_Municipality"]);
-          }
-          if (!municipal.includes(lookupTable[i]["Municipality"])) {
-            municipal.push(lookupTable[i]["Municipality"]);
-          }
-        }
-      }
-      return ["CONSERVATION_AUTHORITY", municipal, region];
-    } else {
-      for (let i = 0; i < lookupTable.length; i++) {
-        if (lookupTable[i]["Municipality"] === jurisdiction) {
-          if (!region.includes(lookupTable[i]["Regional_Municipality"])) {
-            region.push(lookupTable[i]["Regional_Municipality"]);
+    municipal = municipalData.data
+    regionalData = regionalData.data
+    conservationData = conservationData.data
+  })
 
-          }
-          if (
-            !conservation.includes(lookupTable[i]["Conservation_Authority"])
-          ) {
-            conservation.push(lookupTable[i]["Conservation_Authority"]);
-          }
-        }
-      }
-      filtering(csv, jurisdictionList)
-      filtering(csv, jurisdictionList)
-    }
-  }
 
-  function filtering(csvResult, jurisdictionList) {
-    let filteredResults = [];
-    for (let i = 0; i < jurisdictionList.length; i++) {
-      for (let i = 0; i < csvResult.length; i++) {
-
-      }
-    }
-  }
-  //findGovernmentLevels("City of Hamilton");
-
-  // this is for handling the imported data
+  //console.log(municipalData)
+  //console.log(regionalData)
+  //console.log(conservationData)
+  // this is for handling the imported data and joining with the GIS layer
   async function handleCsvData(data, header) {
     // Assuming 'MUNID' is the common key and find the index of regional and municipal layer count
     const commonKeyIndex = header.indexOf("MUNID");
@@ -139,6 +87,133 @@
     }
   }
 
+  async function processCsv(csvLink) {
+    const response = await fetch(csvLink);
+    const csvData = await response.text();
+    const result = await new Promise((resolve) => {
+      Papa.parse(csvData, {
+        complete: (result) => resolve(result),
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+      });
+    });
+    return result;
+  }
+
+  // loading lookuptable to create unique jurisdiction lists.
+  function jurisDictionList(jurisdiction) {
+    let filteredList = [];
+    for (let i = 0; i < lookupTable.length; i++) {
+      if (!filteredList.includes(lookupTable[i][jurisdiction])) {
+        if (!lookupTable[i][jurisdiction] == "") {
+          filteredList.push(lookupTable[i][jurisdiction]);
+        }
+      }
+    }
+    return filteredList;
+  }
+
+  // this is for filtering a list of relevant jurisdiction that users select in their dropdown list
+  function govFiltering(lookupTable, filtergov, government, jurisdiction) {
+    let list = [];
+    for (let i = 0; i < lookupTable.length; i++) {
+      if (lookupTable[i][filtergov] === jurisdiction) {
+        if (!list.includes(lookupTable[i][government])) {
+          list.push(lookupTable[i][government]);
+        }
+      }
+    }
+    return list;
+  }
+
+  function dataFiltering(csvData, jurisdictionList) {
+    // loop through each jurisdiction that is within the jurisdiction list, for each jurisdiction,
+    // add the fitting rows into the matching list
+    let matchingList = [];
+    for (let j = 0; j < jurisdictionList.length; j++) {
+      for (let i = 0; i < csvData.length; i++) {
+        if (csvData[i].OFFICIAL_NAME === jurisdictionList[j]) {
+          matchingList.push(csvData[i]);
+        }
+      }
+    }
+    return matchingList;
+  }
+
+  async function governmentList(jurisdiction, csv) {
+    let region = [];
+    let conservation = [];
+    let municipal = [];
+
+    if (jurisdiction.startsWith("Regional")) {
+      municipal = govFiltering(
+        lookupTable,
+        "Regional_Municipality",
+        "Municipality",
+        jurisdiction,
+      );
+      conservation = govFiltering(
+        lookupTable,
+        "Regional_Municipality",
+        "Conservation_Authority",
+        jurisdiction,
+      );
+
+      //load data from each csv, this avoids having to load all csvs when running.
+      let municipalData = await processCsv(csvLink);
+      let conservationData = await processCsv(consAuth);
+
+      municipalFilter = dataFiltering(municipalData.data, municipal);
+      conservationFilter = dataFiltering(conservationData.data, conservation);
+
+      return municipalFilter
+    } 
+    else if (jurisdiction.endsWith("Authority")) {
+      region = govFiltering(
+        lookupTable,
+        "Conservation_Authority",
+        "Regional_Municipality",
+        jurisdiction,
+      );
+      municipal = govFiltering(
+        lookupTable,
+        "Conservation_Authority",
+        "Municipality",
+        jurisdiction,
+      );
+
+      let municipalData = await processCsv(csvLink);
+      let regionData = await processCsv(region);
+
+      municipalFilter = dataFiltering(municipalData.data, municipal);
+      regionalFilter = dataFiltering(regionData.data, region);
+
+      return regionalFilter
+    } else {
+      region = govFiltering(
+        lookupTable,
+        "Municipality",
+        "Regional_Municipality",
+        jurisdiction,
+      );
+      conservation = govFiltering(
+        lookupTable,
+        "Municipality",
+        "Conservation_Authority",
+        jurisdiction,
+      );
+
+      let conservationData = await processCsv(consAuth);
+      let regionData = await processCsv(region);
+
+      regionalFilter = dataFiltering(regionData.data, region);
+      conservationFilter = dataFiltering(conservationData.data, conservation);
+
+      return conservationFilter
+    }
+  }
+
   // this is a function for filtering data when clicked on the region/municipality
   /*
   function filtering(inputcsv, fieldName, matchingRecord, filtered) {
@@ -160,55 +235,18 @@
     return filtered;
   }
 */
-  //findGovernmentLevels(jurisdiction)[0],
-
   function selectDropdown(e) {
-    governmentList(e.detail.value);
-    //cmaSelectMapUpdate(e.detail.value);
-  }
+    let list = []
+    list = governmentList(e.detail.value);
+    console.log(e.detail.value);
+    popupContent = true;
+    jurisdictionInfo = e.detail.value
+    
+    
 
-  function cmaSelectMapUpdate(cmaname) {
-    selectedJuristidction = cmaname;
 
-    let filteredData = cmaData.filter(
-      (item) => item.CMANAME === selectedJuristidction,
-    )[0];
-
-    cmauidSelected = filteredData.CMAUID;
-    let cmaX = filteredData.x;
-    let cmaY = filteredData.y;
-
-    map.setZoom(9);
-    map.setBearing(0);
-    map.setPitch(0);
-    map.panTo([cmaX, cmaY]);
-
-    const cmaFilter = [
-      "match",
-      ["get", "CMAUID"],
-      [cmauidSelected.toString()],
-      true,
-      false,
-    ];
-    map.setFilter("metro-mindset-csd-2021-border", cmaFilter);
-    map.setFilter("metro-mindset-cma-2021-border", cmaFilter);
-    map.setFilter("metro-mindset-cma-2021-background", cmaFilter);
-    map.setFilter("municipalLabels", cmaFilter);
-  }
-
-  async function processCsv(csvLink) {
-    const response = await fetch(csvLink);
-    const csvData = await response.text();
-    const result = await new Promise((resolve) => {
-      Papa.parse(csvData, {
-        complete: (result) => resolve(result),
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-      });
-    });
-    return result;
-  }
+  
+}
 
   // ============================Loading Data and Maps=============================================
 
@@ -221,15 +259,9 @@
     // read the csvfile from google sheets
 
     const csv = await processCsv(csvLink);
-
-    for (let i = 0; i < csv.data.length; i++) {
-      console.log(csv.data[i].MUNID);
-    }
-
-    const dataLoaded = await handleCsvData(csv.data, csv.meta.fields);
+    const dataLoaded = handleCsvData(csv.data, csv.meta.fields);
 
     if (dataLoaded) {
-      console.log(municipalities);
       map = new maplibregl.Map({
         container: "map",
         style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -369,12 +401,6 @@
       });
 
       map.on("click", "municipalities", (e) => {
-        console.log(
-          e.features[0].properties.OFFICIAL_MUNICIPAL_NAME,
-          ", ",
-          e.features[0].properties.MUN_LAYER_COUNT,
-        );
-
         municipalFilter = filtering(
           result.data,
           "OFFICIAL_MUNICIPAL_NAME",
@@ -420,7 +446,6 @@
   const getResults = async () => {
     results = await fetch(baseUrl + query).then((res) => res.json());
     if (results.length > 0) {
-      console.log(query);
       //this is to remove the previous address point searched (if true)
       if (map.getSource(`address ${lon}`)) {
         //console.log(map.getLayer("address"))
@@ -479,12 +504,7 @@
   <div id="map" />
   <div class="legend">
     <h1>Flood Data Equity</h1>
-    <div class="legend-item">
-      <span class="legend-color" style="background-color: #6D247A;" />
-      <span class="legend-text">In place &nbsp;</span>
-      <span class="legend-color" style="background-color: #DC4633;" />
-      <span class="legend-text">No Longer In Place / Deaccessioned</span>
-    </div>
+
     <p id="info">
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
         >Michael Liu</a
@@ -576,9 +596,22 @@
       />
     </div>
     <div class="bar" />
+    <p></p>
+    <p></p>
+
+    <input bind:value={query} placeholder="Search for a location" />
+    <button on:click={getResults} disabled={query.length < 1}>Search</button>
 
     {#if popupContent}
-      <div id="hide" on:click={hidePopup}>Click Here To Hide Content</div>
+      {console.log(municipal)}
+      {jurisdictionInfo}
+        {#each municipal as entry (entry.ID)}
+          {#if entry.OFFICIAL_NAME == jurisdictionInfo}
+              <p><b>Name: </b>{entry.OFFICIAL_NAME}</p>
+              <p><b>Data: </b>{entry.LINK_TEXT}</p>
+          {/if}
+        {/each}
+
 
       <h2>{title}</h2>
       <p><span id="subtitle"><b>Region: </b></span>{uppertiers}</p>
@@ -594,52 +627,7 @@
         <span id="subtitle"><b># of Conservation Authority Layers: </b></span
         >{munLayer}
       </p>
-
-      <!---Displaying the Data for Each Regional Level-------------->
-
-      {#if regionalFilter.length != 0}
-        <p><span id="subtitle"><b> Regional Flood Layers: </b></span></p>
-      {/if}
-      {#each regionalFilter as row, i}
-        <p>
-          <span id="subtitle"><b>{i + 1}</b> </span><a
-            href={row.LINK}
-            target="_blank">{row.LINK_TEXT}</a
-          >
-        </p>
-      {/each}
-      {#if conservationFilter.length != 0}
-        <p>
-          <span id="subtitle"
-            ><b> Conservation Authority Flood Layers: </b></span
-          >
-        </p>
-      {/if}
-
-      {#each conservationFilter as row, i}
-        <p>
-          <span id="subtitle"><b>{i + 1}</b> </span><a
-            href={row.LINK}
-            target="_blank">{row.LINK_TEXT}</a
-          >
-        </p>
-      {/each}
-
-      <p><span id="subtitle"><b> Municipal Flood Layers: </b></span></p>
-      {#each municipalFilter as row, i}
-        <p>
-          <span id="subtitle"><b>{i + 1}</b> </span><a
-            href={row.LINK}
-            target="_blank">{row.LINK_TEXT}</a
-          >
-        </p>
-      {/each}
     {/if}
-    <p></p>
-    <p></p>
-
-    <input bind:value={query} placeholder="Search for a location" />
-    <button on:click={getResults} disabled={query.length < 1}>Search</button>
   </div>
 </main>
 
@@ -731,6 +719,7 @@
     padding-right: 20px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    overflow-x: hidden;
   }
 
   h1 {
