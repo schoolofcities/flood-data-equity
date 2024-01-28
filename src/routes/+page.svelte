@@ -1,7 +1,7 @@
 <script>
-  import { onMount, afterUpdate } from "svelte";
-  import maplibregl, { LineIndexArray } from "maplibre-gl";
-  import { csvParse } from "d3-dsv";
+  import {onMount} from "svelte";
+  import maplibregl from "maplibre-gl";
+  import {ScaleControl, NavigationControl} from "maplibre-gl";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
@@ -18,20 +18,9 @@
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=898330427&single=true&output=csv";
   // loads a list of unique jurisdictions (i.e. municipality, region, conservation authority)
   let popupContent = false;
-  function hidePopup() {
-    popupContent = false;
-  }
 
   let jurisdictionInfo;
-  let conservation_csvData;
   let map;
-  let title; // the title of the popup
-  let uppertiers; // region name
-  let munLayer; // municipality name
-  let regLayer; // # of layers in the region
-  let lowertier; // # of layers in the municipality
-
-  let conservation;
 
   let conservationFilter;
   let municipalFilter;
@@ -44,6 +33,17 @@
   let regionalData = []; // storing regional data and links
   let conservationData = []; // storing conservation authority data and links
   let selectedJurisdiction = []; //storeing selected jurisdiction data and links.
+
+  var cityList = [
+    "BRAMPTON",
+    "BURLINGTON",
+    "MARKHAM",
+    "MISSISSAUGA",
+    "PICKERING",
+    "RICHMOND HILL",
+    "TORONTO",
+    "VAUGHAN",
+  ];
 
   // ============================functions=============================================
 
@@ -147,7 +147,10 @@
     let conservation = [];
     let municipal = [];
 
+    // the input jurisdicaiton cen be a local, regional, or conservation authority level jurisdicaiton, 
+    // so we have identify which group it belongs, because the returned list will be different
     if (jurisdiction.startsWith("Regional")) {
+      // if this is a regional municipality
       municipal = govFiltering(
         lookupTable,
         "REGION_NAME",
@@ -160,14 +163,15 @@
         "CONSERVATION_NAME",
         jurisdiction,
       );
-      // this is the list of data links within the published by the selected jurisdiction.
+      // this is the list of data links within the selected jurisdiction.
       selectedJurisdiction = dataFiltering(regionalData, [jurisdiction]);
-      // these are the combined list of other jurisdictions the selected one overlaps
+      // these are the combined list of other jurisdictions the selected jurisdiction overlaps
       municipalFilter = dataFiltering(municipalData, municipal);
       conservationFilter = dataFiltering(conservationData, conservation);
 
       return [selectedJurisdiction, municipalFilter, conservationFilter];
     } else if (jurisdiction.endsWith("Authority")) {
+      // if this is a conservation authority
       region = govFiltering(
         lookupTable,
         "CONSERVATION_NAME",
@@ -187,6 +191,7 @@
       regionalFilter = dataFiltering(regionalData, region);
       return [selectedJurisdiction, municipalFilter, regionalFilter];
     } else {
+      // if this is a local municipality
       region = govFiltering(
         lookupTable,
         "MUNICIPAL_NAME",
@@ -208,10 +213,8 @@
     }
   }
 
-  async function selectDropdown(e) {
+  function selectDropdown(e) {
     jurisdictionInfo = e.detail.value;
-    console.log(jurisdictionInfo);
-
     selectedJurisdiction = [];
     municipalFilter = [];
     conservationFilter = [];
@@ -240,6 +243,7 @@
       selectedCon = "";
       selectedReg = "";
     }
+
     let clean = jurisdictionInfo
       .replace("City of ", "")
       .replace("Town of ", "")
@@ -252,21 +256,6 @@
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
     ]);
-    /*
-    map.removeLayer(conservationAuthority2)
-
-
-    map.addLayer({
-          id: "conservationAuthority2",
-          type: "line",
-          source: "conservationAuthority",
-          layout: {},
-          paint: {
-            "line-color": "red", // Border color
-            "line-width": 2, // Border width
-            "line-dasharray": [2, 2],
-          },'filter': ['==', 'CONSERVATION_NAME', jurisdictionInfo]
-        });*/
   }
 
   // ============================Loading Data and Maps=============================================
@@ -302,10 +291,11 @@
       });
 
       // Adding zoom and rotation controls to the map
-      map.addControl(new maplibregl.NavigationControl(), "top-right");
-      map.addControl(scale, "bottom-left");
+
       // Adding additional layers from geojson
       map.on("load", function () {
+        map.addControl(new maplibregl.NavigationControl(), "top-right");
+      map.addControl(scale, "bottom-right");
         const layers = map.getStyle().layers;
 
         // Find the index of the first symbol layer in the map style.
@@ -351,18 +341,18 @@
             "fill-color": [
               "step",
               ["get", "MUN_LAYER"], // Property in your GeoJSON data containing the values
-              "#a9d6e5",
-              2, // Red for values 0 or lower
-              "#89c2d9",
-              3,
-              "#2c7da0",
-              4, // Green for values between 0 and 50
-              "#2a6f97",
-              7, // yellow for 20-50
-              "#013a63",
-              10, // Blue for values 50 or higher
-              /* Add more stops and colors as needed */
               "#FFFFFF",
+              2, // 2 or lower
+              "#a9d6e5",
+              3, // 3
+              "#89c2d9",
+              4, // 4-7
+              "#2c7da0",
+              7, // 7-10
+              "#2a6f97",
+              10, 
+              /* Add more stops and colors as needed */
+              "#013a63",
             ],
             "fill-opacity": 0.7,
           },
@@ -457,40 +447,41 @@
       });
 
       map.on("click", "municipalities", (e) => {
-        jurisdictionInfo = e.features[0].properties.CSDNAME;
-        console.log(jurisdictionInfo);
-
-        selectedJurisdiction = [];
-        municipalFilter = [];
-        conservationFilter = [];
-        regionalFilter = [];
+        if (cityList.includes(e.features[0].properties.CSDNAME.toUpperCase())) {
+          jurisdictionInfo = "City of " + e.features[0].properties.CSDNAME;
+        } else {
+          jurisdictionInfo = "Town of " + e.features[0].properties.CSDNAME;
+        }
 
         // get the filtered results
-        
-          selectedJurisdiction = governmentList(jurisdictionInfo)[0];
-          regionalFilter = governmentList(jurisdictionInfo)[1];
-          conservationFilter = governmentList(jurisdictionInfo)[2];
 
-        $: title = e.features[0].properties.MUNICIPAL_NAME_SHORTFORM;
-        $: lowertier = e.features[0].properties.MUNICIPAL_NAME_SHORTFORM;
-        $: uppertiers = e.features[0].properties.UPPER_TIER_MUNICIPALITY;
-        $: munLayer = e.features[0].properties.MUN_LAYER;
-        $: regLayer = e.features[0].properties.REG_WIDE_LAYER;
+        selectedJurisdiction = governmentList(jurisdictionInfo)[0];
+        regionalFilter = governmentList(jurisdictionInfo)[1];
+        conservationFilter = governmentList(jurisdictionInfo)[2];
+
+        selectedCon = "";
+        selectedReg = "";
+
+        let clean = jurisdictionInfo
+          .replace("City of ", "")
+          .replace("Town of ", "")
+          .replace("Regional Municipality of ", "");
+
+        map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
+        map.setFilter("municipalities-border2", [
+          "==",
+          ["get", "CSDNAME"],
+          clean,
+        ]);
+        map.setFilter("conservationAuthority2", [
+          "==",
+          ["get", "LEGAL_NAME"],
+          jurisdictionInfo,
+        ]);
+
+        //$: title = e.features[0].properties.CSDNAME;
 
         popupContent = true;
-      });
-
-
-      map.on("click", "conservationAuthority-fill", (e) => {
-        console.log(e.features[0].properties.LEGAL_NAME);
-        $: conservation = e.features[0].properties.LEGAL_NAME;
-
-        conservationFilter = filtering(
-          conservation_csvData,
-          "CA_Name",
-          e.features[0].properties,
-          conservationFilter,
-        );
       });
     }
   });
@@ -498,27 +489,28 @@
   // Geocoder for people to input their address and zoom to input address
   const baseUrl =
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
+
   let query = ""; //This is the input address from users.
   let lat;
   let lon;
   let results;
+
   const getResults = async () => {
     results = await fetch(baseUrl + query).then((res) => res.json());
     if (results.length > 0) {
       //this is to remove the previous address point searched (if true)
       if (map.getSource(`address ${lon}`)) {
-        //console.log(map.getLayer("address"))
         map.removeSource(`address ${lon}`);
         map.removeLayer(`address-layer ${lon}`);
-        //console.log("Removed Source")
       }
+
       //get long - lat
       lat = +results[0].lat;
       lon = +results[0].lon;
       console.log(lat, lon);
       map.flyTo({
         // These options control the ending camera position: centered at
-        // the target, at zoom level 9, and north up.
+        // the target, at zoom level 16, and north up.
         center: [lon, lat],
         zoom: 16,
         bearing: 0,
@@ -533,9 +525,6 @@
         // this animation is considered essential with respect to prefers-reduced-motion
         essential: true,
       });
-
-      // Add a symbol layer
-      console.log("Add Source");
       // add point to show the searched address
       map.addSource(`address ${lon}`, {
         type: "geojson",
@@ -553,6 +542,31 @@
           "circle-color": "#FF0000", // Set the color of the point
         },
       });
+
+      var userPoint = turf.point([lon, lat]);
+      for (let i = 0; i < municipalities.features.length; i++) {
+        //console.log(turf.booleanPointInPolygon(userPoint, municipalities.features[i]))
+        //console.log(municipalities.features[i])
+        if (turf.booleanPointInPolygon(userPoint, municipalities.features[i])) {
+          selectedJurisdiction = [];
+          regionalFilter = [];
+          conservationFilter = [];
+          if (
+            cityList.includes(
+              municipalities.features[i].properties.CSDNAME.toUpperCase(),
+            ) 
+          ) {
+            jurisdictionInfo =
+              "City of " + municipalities.features[i].properties.CSDNAME;
+          } else {
+            jurisdictionInfo =
+              "Town of " + municipalities.features[i].properties.CSDNAME;
+          }
+          selectedJurisdiction = governmentList(jurisdictionInfo)[0];
+          regionalFilter = governmentList(jurisdictionInfo)[1];
+          conservationFilter = governmentList(jurisdictionInfo)[2];
+        }
+      }
     } else {
       alert("Sorry, no geocoding results for " + query);
     }
@@ -562,7 +576,7 @@
 <main>
   <div id="map" />
   <div class="legend">
-    <h1>Flood Data Equity</h1>
+    <h1>GTA Flood Data Equity</h1>
 
     <p id="info">
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
@@ -662,10 +676,8 @@
       <!-- Present Each List of CSV Links-->
       {#if selectedJurisdiction}
         {#if !jurisdictionInfo.endsWith("Authority")}
-          <p>
-            <span id="subtitle"><b># of Layers: </b></span
-            >{selectedJurisdiction.length}
-          </p>
+          <span id="subtitle"><b># of Layers: </b></span
+          >{selectedJurisdiction.length}
         {/if}
         {#each selectedJurisdiction as entry, i}
           <p>
