@@ -1,7 +1,7 @@
 <script>
-  import {onMount} from "svelte";
+  import { onMount } from "svelte";
   import maplibregl from "maplibre-gl";
-  import {ScaleControl, NavigationControl} from "maplibre-gl";
+  import { ScaleControl, NavigationControl } from "maplibre-gl";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
@@ -147,7 +147,7 @@
     let conservation = [];
     let municipal = [];
 
-    // the input jurisdicaiton cen be a local, regional, or conservation authority level jurisdicaiton, 
+    // the input jurisdicaiton cen be a local, regional, or conservation authority level jurisdicaiton,
     // so we have identify which group it belongs, because the returned list will be different
     if (jurisdiction.startsWith("Regional")) {
       // if this is a regional municipality
@@ -212,16 +212,17 @@
       return [selectedJurisdiction, regionalFilter, conservationFilter];
     }
   }
-
-  function selectDropdown(e) {
-    jurisdictionInfo = e.detail.value;
+  /*
+  function selectDropdown() {
     selectedJurisdiction = [];
     municipalFilter = [];
     conservationFilter = [];
     regionalFilter = [];
-
+    console.log(jurisdictionInfo);
     // get the filtered results
     if (jurisdictionInfo.startsWith("Regional")) {
+      jurisdictionInfo = selectedReg;
+      console.log(jurisdictionInfo);
       selectedJurisdiction = governmentList(jurisdictionInfo)[0];
       municipalFilter = governmentList(jurisdictionInfo)[1];
       conservationFilter = governmentList(jurisdictionInfo)[2];
@@ -229,6 +230,8 @@
       selectedMun = "";
       selectedCon = "";
     } else if (jurisdictionInfo.endsWith("Authority")) {
+      jurisdictionInfo = selectedCon;
+      console.log(jurisdictionInfo);
       selectedJurisdiction = governmentList(jurisdictionInfo)[0];
       municipalFilter = governmentList(jurisdictionInfo)[1];
       regionalFilter = governmentList(jurisdictionInfo)[2];
@@ -236,6 +239,8 @@
       selectedMun = "";
       selectedReg = "";
     } else {
+      jurisdictionInfo = selectedMun;
+
       selectedJurisdiction = governmentList(jurisdictionInfo)[0];
       regionalFilter = governmentList(jurisdictionInfo)[1];
       conservationFilter = governmentList(jurisdictionInfo)[2];
@@ -248,6 +253,39 @@
       .replace("City of ", "")
       .replace("Town of ", "")
       .replace("Regional Municipality of ", "");
+
+    popupContent = true;
+
+    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
+    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("conservationAuthority2", [
+      "==",
+      ["get", "LEGAL_NAME"],
+      jurisdictionInfo,
+    ]);
+  }
+  */
+  function selectMunDropdown() {
+    selectedJurisdiction = [];
+    conservationFilter = [];
+    regionalFilter = [];
+
+    // get the filtered results
+    jurisdictionInfo = selectedMun;
+    console.log(jurisdictionInfo);
+    //filtering results
+    selectedJurisdiction = governmentList(jurisdictionInfo)[0];
+    regionalFilter = governmentList(jurisdictionInfo)[1];
+    conservationFilter = governmentList(jurisdictionInfo)[2];
+
+    selectedCon = "";
+    selectedReg = "";
+
+    let clean = jurisdictionInfo
+      .replace("City of ", "")
+      .replace("Town of ", "")
+      .replace("Regional Municipality of ", "");
+
     popupContent = true;
     map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
     map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
@@ -258,6 +296,66 @@
     ]);
   }
 
+  function selectRegDropdown() {
+    selectedJurisdiction = [];
+    municipalFilter = [];
+    regionalFilter = [];
+
+
+    // get the filtered results
+    jurisdictionInfo = selectedReg;
+    console.log(jurisdictionInfo);
+    selectedJurisdiction = governmentList(jurisdictionInfo)[0];
+    municipalFilter = governmentList(jurisdictionInfo)[1];
+    conservationFilter = governmentList(jurisdictionInfo)[2];
+
+    selectedMun = "";
+    selectedCon = "";
+
+    let clean = jurisdictionInfo
+      .replace("City of ", "")
+      .replace("Town of ", "")
+      .replace("Regional Municipality of ", "");
+
+    popupContent = true;
+    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
+    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("conservationAuthority2", [
+      "==",
+      ["get", "LEGAL_NAME"],
+      jurisdictionInfo,
+    ]);
+  }
+
+  function selectConDropdown() {
+    selectedJurisdiction = [];
+    municipalFilter = [];
+    conservationFilter = [];
+
+    // get the filtered results
+    jurisdictionInfo = selectedCon;
+    console.log(jurisdictionInfo);
+    selectedJurisdiction = governmentList(jurisdictionInfo)[0];
+    municipalFilter = governmentList(jurisdictionInfo)[1];
+    regionalFilter = governmentList(jurisdictionInfo)[1];
+
+    selectedMun = "";
+    selectedReg = "";
+
+    let clean = jurisdictionInfo
+      .replace("City of ", "")
+      .replace("Town of ", "")
+      .replace("Regional Municipality of ", "");
+
+    popupContent = true;
+    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
+    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("conservationAuthority2", [
+      "==",
+      ["get", "LEGAL_NAME"],
+      jurisdictionInfo,
+    ]);
+  }
   // ============================Loading Data and Maps=============================================
 
   let conservationList = jurisDictionListing("CONSERVATION_NAME");
@@ -283,19 +381,15 @@
         scrollZoom: true,
         attributionControl: false,
       });
-
       // Adding scale bar to the map
       let scale = new maplibregl.ScaleControl({
         maxWidth: 100,
         unit: "metric",
       });
-
-      // Adding zoom and rotation controls to the map
-
       // Adding additional layers from geojson
       map.on("load", function () {
         map.addControl(new maplibregl.NavigationControl(), "top-right");
-      map.addControl(scale, "bottom-right");
+        map.addControl(scale, "bottom-right");
         const layers = map.getStyle().layers;
 
         // Find the index of the first symbol layer in the map style.
@@ -306,22 +400,18 @@
             break;
           }
         }
-
         map.addSource("conservationAuthority", {
           type: "geojson",
           data: conservationAuthority,
         });
-
         map.addSource("municipalities", {
           type: "geojson",
           data: municipalities,
         });
-
         map.addSource("uppertier", {
           type: "geojson",
           data: uppertier,
         });
-
         map.addLayer({
           id: "conservationAuthority-fill",
           type: "fill",
@@ -350,14 +440,13 @@
               "#2c7da0",
               7, // 7-10
               "#2a6f97",
-              10, 
+              10,
               /* Add more stops and colors as needed */
               "#013a63",
             ],
             "fill-opacity": 0.7,
           },
         });
-
         map.addLayer({
           id: "municipalities-border",
           type: "line",
@@ -368,7 +457,6 @@
             "line-width": 1, // Border width
           },
         });
-
         map.addLayer({
           id: "uppertier-border",
           type: "line",
@@ -430,22 +518,18 @@
           filter: ["==", ["get", "CSDNAME"], ""],
         });
       });
-
       // Create pop-up
       const popup = new maplibregl.Popup({
         closeButton: true,
         closeOnClick: true,
         maxWidth: "none",
       });
-
       map.on("mouseenter", "municipalities", () => {
         map.getCanvas().style.cursor = "pointer";
       });
-
       map.on("mouseleave", "municipalities", () => {
         map.getCanvas().style.cursor = "";
       });
-
       map.on("click", "municipalities", (e) => {
         if (cityList.includes(e.features[0].properties.CSDNAME.toUpperCase())) {
           jurisdictionInfo = "City of " + e.features[0].properties.CSDNAME;
@@ -542,7 +626,10 @@
           "circle-color": "#FF0000", // Set the color of the point
         },
       });
-
+      selectedJurisdiction = []
+      regionalFilter = []
+      conservationFilter = []
+      municipalFilter = []
       var userPoint = turf.point([lon, lat]);
       for (let i = 0; i < municipalities.features.length; i++) {
         //console.log(turf.booleanPointInPolygon(userPoint, municipalities.features[i]))
@@ -554,7 +641,7 @@
           if (
             cityList.includes(
               municipalities.features[i].properties.CSDNAME.toUpperCase(),
-            ) 
+            )
           ) {
             jurisdictionInfo =
               "City of " + municipalities.features[i].properties.CSDNAME;
@@ -566,6 +653,10 @@
           regionalFilter = governmentList(jurisdictionInfo)[1];
           conservationFilter = governmentList(jurisdictionInfo)[2];
         }
+        selectedReg = ""
+        selectedMun = ""
+        selectedCon = ""
+
       }
     } else {
       alert("Sorry, no geocoding results for " + query);
@@ -590,82 +681,38 @@
     <div class="bar" />
 
     <div id="select-wrapper">
-      <Select
-        id="select"
-        items={municipalList}
-        value={selectedMun}
-        clearable={false}
-        showChevron={true}
-        on:input={selectDropdown}
-        --background="white"
-        --selected-item-color="#6D247A"
-        --width="25vw"
-        --height="22px"
-        --item-color="#6D247A"
-        --border-radius="0"
-        --border="1px"
-        --list-border-radius="0px"
-        --font-size="14.45px"
-        --max-height="30px"
-        --item-is-active-color="#0D534D"
-        --item-is-active-bg="#6FC7EA"
-      />
+      <select bind:value={selectedMun} on:change={selectMunDropdown}>
+        {#each municipalList as mun}
+          <option>{mun}</option>
+        {/each}
+      </select>
     </div>
-    <div class="bar" />
-    <p1><b> Select A Regional Municipality:</b> </p1>
     <div class="bar" />
 
+    <p1><b> Select A Regional Municipality:</b> </p1>
+    <div class="bar" />
     <div id="select-wrapper">
-      <Select
-        id="select"
-        items={regionList}
-        value={selectedReg}
-        clearable={false}
-        showChevron={true}
-        on:input={selectDropdown}
-        --background="white"
-        --selected-item-color="#6D247A"
-        --width="25vw"
-        --height="22px"
-        --item-color="#6D247A"
-        --border-radius="0"
-        --border="1px"
-        --list-border-radius="0px"
-        --font-size="14.45px"
-        --max-height="30px"
-        --item-is-active-color="#0D534D"
-        --item-is-active-bg="#6FC7EA"
-      />
+      <select bind:value={selectedReg} on:change={selectRegDropdown}>
+        {#each regionList as reg}
+          <option>{reg}</option>
+        {/each}
+      </select>
     </div>
+
     <div class="bar" />
     <p1><b> Select A Conservation Authority:</b> </p1>
     <div class="bar" />
 
     <div id="select-wrapper">
-      <Select
-        id="select"
-        items={conservationList}
-        value={selectedCon}
-        clearable={false}
-        showChevron={true}
-        on:input={selectDropdown}
-        --background="white"
-        --selected-item-color="#6D247A"
-        --width="25vw"
-        --height="25px"
-        --item-color="#6D247A"
-        --border-radius="0"
-        --border="1px"
-        --list-border-radius="0px"
-        --font-size="14.45px"
-        --max-height="30px"
-        --item-is-active-color="#0D534D"
-        --item-is-active-bg="#6FC7EA"
-      />
+      <select bind:value={selectedCon} on:change={selectConDropdown}>
+        {#each conservationList as con}
+          <option>{con}</option>
+        {/each}
+      </select>
     </div>
+
     <div class="bar" />
-    <p></p>
-    <p></p>
+
     <!-- geocoder -->
     <p1><b>Search Your Address</b></p1>
     <input bind:value={query} placeholder="i.e. 100 St George St, Toronto" />
@@ -898,5 +945,19 @@
     padding-left: 10px;
     padding-top: 3px;
     padding-bottom: 3px;
+  }
+  select {
+    width: 25vw;
+    height: 25px;
+    font-family: TradeGothicBold;
+    font-size: 16px;
+    color: #6d247a;
+    border-width: 0px;
+    margin-right: 5px;
+    padding-left: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-radius: 0;
+    border: 1px;
   }
 </style>
