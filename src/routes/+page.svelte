@@ -51,24 +51,30 @@
   async function handleCsvData(data, header) {
     // Assuming 'MUNID' is the common key and find the index of regional and municipal layer count
     const munCountIndex = header.indexOf("MUN_LAYER");
-    const regionCountIndex = header.indexOf("REG_WIDE_LAYER");
-
     try {
       municipalities.features.forEach((feature) => {
         // Find matching record in CSV data
         const matchingRecord = data.find(
           (obj) => obj.CSDUID.toString() === feature.properties.CSDUID,
         );
+        console.log(header[munCountIndex]);
         // If a match is found, update GeoJSON properties with CSV data
         if (matchingRecord) {
           feature.properties[header[munCountIndex]] = parseInt(
             matchingRecord.MUN_LAYER,
           );
-          feature.properties[header[regionCountIndex]] = parseInt(
-            matchingRecord.REG_WIDE_LAYER,
-          );
+        }
+        console.log(feature.properties[header[munCountIndex]]);
+      });
+
+      // this is to update those with no values to 0
+      municipalities.features.forEach((feature) => {
+        // Find matching record in CSV data
+        if (feature.properties[header[munCountIndex]] === undefined) {
+          feature.properties[header[munCountIndex]] = 0;
         }
       });
+
       return true;
       // Now municipalities GeoJSON features have additional properties from the CSV data
     } catch (error) {
@@ -88,6 +94,7 @@
         skipEmptyLines: true,
       });
     });
+
     return result;
   }
 
@@ -212,59 +219,7 @@
       return [selectedJurisdiction, regionalFilter, conservationFilter];
     }
   }
-  /*
-  function selectDropdown() {
-    selectedJurisdiction = [];
-    municipalFilter = [];
-    conservationFilter = [];
-    regionalFilter = [];
-    console.log(jurisdictionInfo);
-    // get the filtered results
-    if (jurisdictionInfo.startsWith("Regional")) {
-      jurisdictionInfo = selectedReg;
-      console.log(jurisdictionInfo);
-      selectedJurisdiction = governmentList(jurisdictionInfo)[0];
-      municipalFilter = governmentList(jurisdictionInfo)[1];
-      conservationFilter = governmentList(jurisdictionInfo)[2];
 
-      selectedMun = "";
-      selectedCon = "";
-    } else if (jurisdictionInfo.endsWith("Authority")) {
-      jurisdictionInfo = selectedCon;
-      console.log(jurisdictionInfo);
-      selectedJurisdiction = governmentList(jurisdictionInfo)[0];
-      municipalFilter = governmentList(jurisdictionInfo)[1];
-      regionalFilter = governmentList(jurisdictionInfo)[2];
-
-      selectedMun = "";
-      selectedReg = "";
-    } else {
-      jurisdictionInfo = selectedMun;
-
-      selectedJurisdiction = governmentList(jurisdictionInfo)[0];
-      regionalFilter = governmentList(jurisdictionInfo)[1];
-      conservationFilter = governmentList(jurisdictionInfo)[2];
-
-      selectedCon = "";
-      selectedReg = "";
-    }
-
-    let clean = jurisdictionInfo
-      .replace("City of ", "")
-      .replace("Town of ", "")
-      .replace("Regional Municipality of ", "");
-
-    popupContent = true;
-
-    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
-    map.setFilter("conservationAuthority2", [
-      "==",
-      ["get", "LEGAL_NAME"],
-      jurisdictionInfo,
-    ]);
-  }
-  */
   function selectMunDropdown() {
     selectedJurisdiction = [];
     conservationFilter = [];
@@ -301,7 +256,6 @@
     municipalFilter = [];
     regionalFilter = [];
 
-
     // get the filtered results
     jurisdictionInfo = selectedReg;
     console.log(jurisdictionInfo);
@@ -334,7 +288,6 @@
 
     // get the filtered results
     jurisdictionInfo = selectedCon;
-    console.log(jurisdictionInfo);
     selectedJurisdiction = governmentList(jurisdictionInfo)[0];
     municipalFilter = governmentList(jurisdictionInfo)[1];
     regionalFilter = governmentList(jurisdictionInfo)[1];
@@ -431,8 +384,10 @@
             "fill-color": [
               "step",
               ["get", "MUN_LAYER"], // Property in your GeoJSON data containing the values
-              "#FFFFFF",
-              2, // 2 or lower
+              "white",
+              0,
+              "grey",
+              1, // 1 or lower
               "#a9d6e5",
               3, // 3
               "#89c2d9",
@@ -441,7 +396,6 @@
               7, // 7-10
               "#2a6f97",
               10,
-              /* Add more stops and colors as needed */
               "#013a63",
             ],
             "fill-opacity": 0.7,
@@ -536,7 +490,7 @@
         } else {
           jurisdictionInfo = "Town of " + e.features[0].properties.CSDNAME;
         }
-
+        municipalFilter = [];
         // get the filtered results
 
         selectedJurisdiction = governmentList(jurisdictionInfo)[0];
@@ -626,10 +580,10 @@
           "circle-color": "#FF0000", // Set the color of the point
         },
       });
-      selectedJurisdiction = []
-      regionalFilter = []
-      conservationFilter = []
-      municipalFilter = []
+      selectedJurisdiction = [];
+      regionalFilter = [];
+      conservationFilter = [];
+      municipalFilter = [];
       var userPoint = turf.point([lon, lat]);
       for (let i = 0; i < municipalities.features.length; i++) {
         //console.log(turf.booleanPointInPolygon(userPoint, municipalities.features[i]))
@@ -653,22 +607,31 @@
           regionalFilter = governmentList(jurisdictionInfo)[1];
           conservationFilter = governmentList(jurisdictionInfo)[2];
         }
-        selectedReg = ""
-        selectedMun = ""
-        selectedCon = ""
-
+        selectedReg = "";
+        selectedMun = "";
+        selectedCon = "";
       }
     } else {
       alert("Sorry, no geocoding results for " + query);
     }
   };
+
+
 </script>
 
 <main>
-  <div id="map" />
-  <div class="legend">
-    <h1>GTA Flood Data Equity</h1>
 
+
+  <div id="map" />
+  <div class="intro">
+    <h1>GTA Flood Data Equity</h1>
+    <p1> # of Municipal Flood Data Layers </p1> <br>
+    <span class="dot" style= "background-color: grey"><p style="font-weight: bold; color: white; margin-left: 9px;"><b>0</p></span>
+    <span class="dot" style= "background-color: #a9d6e5"><p style="font-weight: bold; color: black; margin-left: 5px;">1+</p></span>
+    <span class="dot" style= "background-color: #89c2d9"><p style="font-weight: bold; color: black; margin-left: 4px;">3+</p></span>
+    <span class="dot" style= "background-color: #2c7da0"><p style="font-weight: bold; color: white; margin-left: 4px;">4+</p></span>
+    <span class="dot" style= "background-color: #2a6f97"><p style="font-weight: bold; color: white; margin-left: 4px;">7+</p></span>
+    <span class="dot" style= "background-color: #013a63"><p style="font-weight: bold; color: white; margin-left: 1px;">10+</p></span>
     <p id="info">
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
         >Michael Liu</a
@@ -733,7 +696,9 @@
             >
           </p>
         {/each}
+        <p>  </p>
       {/if}
+      
 
       <!-- Present Each List of CSV Links-->
       {#if municipalFilter}
@@ -756,8 +721,10 @@
               >
             </p>
           {/each}
+          <p>  </p>
         {/if}
       {/if}
+      <p>  </p>
       <!-- Regional Layers -->
       {#if regionalFilter}
         {#if regionalFilter.length > 0}
@@ -777,8 +744,10 @@
               >
             </p>
           {/each}
+          <p>  </p>
         {/if}
       {/if}
+      
 
       {#if conservationFilter}
         {#if conservationFilter.length > 0}
@@ -800,10 +769,13 @@
               >
             </p>
           {/each}
+          <p>  </p>
         {/if}
       {/if}
     {/if}
+    <p>   </p>
   </div>
+
 </main>
 
 <style>
@@ -843,7 +815,7 @@
     opacity: 0.25;
   }
 
-  .legend {
+  .intro {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -889,14 +861,18 @@
     font-family: TradeGothicBold;
     color: #6d247a;
     font-size: 16px;
+    font-weight: bold;
   }
 
   p {
-    margin-left: 20px;
+    margin-top: 5px;
+    margin-left: 30px;
+    margin-bottom: 15px;
     font-family: RobotoRegular;
     font-size: 14px;
     opacity: 1;
     color: #007fa3;
+    font-weight: bold;
   }
 
   p1 {
@@ -906,7 +882,6 @@
     opacity: 1;
     color: #007fa3;
   }
-
   a {
     text-decoration: underline;
     color: #007fa3;
@@ -945,6 +920,7 @@
     padding-left: 10px;
     padding-top: 3px;
     padding-bottom: 3px;
+    font-weight: bold;
   }
   select {
     width: 25vw;
@@ -960,4 +936,17 @@
     border-radius: 0;
     border: 1px;
   }
+  .dot {
+    height: 25px;
+    width: 25px;
+    padding: 5px;
+    margin-left: 10px;
+    margin-top: 10px;
+    /*background-color: #bbb;*/
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.7;
+  }
+
+ 
 </style>
