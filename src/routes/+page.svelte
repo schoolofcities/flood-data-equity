@@ -1,7 +1,7 @@
 <script>
-  import { onMount } from "svelte";
+  import {onMount} from "svelte";
   import maplibregl from "maplibre-gl";
-  import { ScaleControl, NavigationControl } from "maplibre-gl";
+  import {ScaleControl, NavigationControl} from "maplibre-gl";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
@@ -10,11 +10,11 @@
   import Select from "svelte-select";
   import Papa from "papaparse";
 
-  const csvLink =
+  const municipalCsv =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
-  const region =
+  const regionCsv =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=193533627&single=true&output=csv";
-  const consAuth =
+  const consAuthCsv =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=898330427&single=true&output=csv";
   // loads a list of unique jurisdictions (i.e. municipality, region, conservation authority)
   let popupContent = false;
@@ -32,7 +32,8 @@
   let municipalData = []; // storing municipal data and links
   let regionalData = []; // storing regional data and links
   let conservationData = []; // storing conservation authority data and links
-  let selectedJurisdiction = []; //storeing selected jurisdiction data and links.
+  let selectedJurisdiction = []; //storing selected jurisdiction data and links.
+  let dataLoaded = false
 
   var cityList = [
     "BRAMPTON",
@@ -57,17 +58,15 @@
         const matchingRecord = data.find(
           (obj) => obj.CSDUID.toString() === feature.properties.CSDUID,
         );
-        console.log(header[munCountIndex]);
         // If a match is found, update GeoJSON properties with CSV data
         if (matchingRecord) {
           feature.properties[header[munCountIndex]] = parseInt(
             matchingRecord.MUN_LAYER,
           );
         }
-        console.log(feature.properties[header[munCountIndex]]);
       });
 
-      // this is to update those with no values to 0
+      // this is to update those with no MUN_LAYER values to 0
       municipalities.features.forEach((feature) => {
         // Find matching record in CSV data
         if (feature.properties[header[munCountIndex]] === undefined) {
@@ -83,6 +82,7 @@
     }
   }
 
+  // load the google sheet csv data
   async function processCsv(csvLink) {
     const response = await fetch(csvLink);
     const csvData = await response.text();
@@ -97,19 +97,25 @@
 
     return result;
   }
-
+  // load the data
   onMount(async () => {
-    municipalData = await processCsv(csvLink);
-    regionalData = await processCsv(region);
-    conservationData = await processCsv(consAuth);
+    municipalData = await processCsv(municipalCsv);
+    regionalData = await processCsv(regionCsv);
+    conservationData = await processCsv(consAuthCsv);
 
     municipalData = municipalData.data;
     regionalData = regionalData.data;
     conservationData = conservationData.data;
+
+    console.log(municipalData)
+    console.log(regionalData)
+    console.log(conservationData)
   });
 
-  // loading lookuptable to create unique jurisdiction lists.
+  // loading lookuptable to create unique jurisdiction lists.(i.e all the names of the municipalities)
   function jurisDictionListing(jurisdiction) {
+    // jurisdiction is the level of government we want to pull from. 
+    // inputs includes:  MUNICIPAL_NAME, REGIONAL_NAME, CONSERVATION_NAME
     let filteredList = [];
     for (let i = 0; i < lookupTable.length; i++) {
       if (!filteredList.includes(lookupTable[i][jurisdiction])) {
@@ -121,8 +127,13 @@
     return filteredList;
   }
 
-  // this is for filtering a list of relevant jurisdiction that users select in their dropdown list
+  // this is for filtering a list of relevant jurisdictions to the jurisdiction that users select in their dropdown list
   function govFiltering(lookupTable, filtergov, government, jurisdiction) {
+    // lookupTable is the lookupTable json file
+    // filtergov is the level of government of the selected jurisdiction, input includes MUNICIPAL_NAME, REGIONAL_NAME, CONSERVATION_NAME
+    // government is the information of the level of government we want to pull from, input includes  MUNICIPAL_NAME, REGIONAL_NAME, CONSERVATION_NAME
+    // jurisdiction is selected value from the drop down list, input can be: Regional Municipality of York, City of Toronto, Town of Ajax, and Toronto and Regional Conservation Authority
+
     let list = [];
     for (let i = 0; i < lookupTable.length; i++) {
       if (lookupTable[i][filtergov] === jurisdiction) {
@@ -135,10 +146,17 @@
   }
 
   function dataFiltering(csvData, jurisdictionList) {
-    // loop through each jurisdiction that is within the jurisdiction list, for each jurisdiction,
+    // csvData is the municipal, regional, and conservation authority data csvData contains all the data for each respective level of government, 
+    // we don't need all that data, so we need this function to filter the ones we want. 
+
+    // jurisdictionList is a list of relevant jurisdictions that we got from the govFiltering() function. 
+
+    // we want to loop through each jurisdiction that is within the jurisdiction list, for each jurisdiction,
     // add the fitting rows into the matching list
     let matchingList = [];
+    // loop though the jurisdiction list
     for (let j = 0; j < jurisdictionList.length; j++) {
+      // loop through all the csvData to find matching jurisdictions
       for (let i = 0; i < csvData.length; i++) {
         //remember to convert lookuptable value to upper case, to match with the official name in csvdata
         if (csvData[i].OFFICIAL_NAME === jurisdictionList[j].toUpperCase()) {
@@ -146,15 +164,19 @@
         }
       }
     }
+    console.log(matchingList)
     return matchingList;
   }
 
   function governmentList(jurisdiction) {
+    // jurisdiction is the selected value from the drop down menu, that value will come from the selectMunDropdown, selectRegDropdown, selectConDropdown
+    // the function will return two lists, if jurisdiction is regional, it will return municipal and conservation, if jurisdiction is conservation, 
+    // it will return municipal and regional, if jurisdiction is municipal, then it returns conservation and regional    
     let region = [];
     let conservation = [];
     let municipal = [];
 
-    // the input jurisdicaiton cen be a local, regional, or conservation authority level jurisdicaiton,
+    // the input jurisdicton can be a local, regional, or conservation authority level jurisdicaiton,
     // so we have identify which group it belongs, because the returned list will be different
     if (jurisdiction.startsWith("Regional")) {
       // if this is a regional municipality
@@ -175,7 +197,7 @@
       // these are the combined list of other jurisdictions the selected jurisdiction overlaps
       municipalFilter = dataFiltering(municipalData, municipal);
       conservationFilter = dataFiltering(conservationData, conservation);
-
+      regionalFilter = [] // have this here so that it clears out the municipalFilter values from previous selection
       return [selectedJurisdiction, municipalFilter, conservationFilter];
     } else if (jurisdiction.endsWith("Authority")) {
       // if this is a conservation authority
@@ -196,8 +218,10 @@
       // these are the combined list of other jurisdictions the selected one overlaps
       municipalFilter = dataFiltering(municipalData, municipal);
       regionalFilter = dataFiltering(regionalData, region);
+      conservationFilter = [] // have this here so that it clears out the municipalFilter values from previous selection
       return [selectedJurisdiction, municipalFilter, regionalFilter];
     } else {
+      municipal = [];
       // if this is a local municipality
       region = govFiltering(
         lookupTable,
@@ -211,15 +235,17 @@
         "CONSERVATION_NAME",
         jurisdiction,
       );
+
       // this is the list of data links within the published by the selected jurisdiction.
       selectedJurisdiction = dataFiltering(municipalData, [jurisdiction]);
       // these are the combined list of other jurisdictions the selected one overlaps
       regionalFilter = dataFiltering(regionalData, region);
       conservationFilter = dataFiltering(conservationData, conservation);
+      municipalFilter = [] // have this here so that it clears out the municipalFilter values from previous selection
       return [selectedJurisdiction, regionalFilter, conservationFilter];
     }
   }
-
+  // the dropdown for municipalities
   function selectMunDropdown() {
     selectedJurisdiction = [];
     conservationFilter = [];
@@ -242,15 +268,17 @@
       .replace("Regional Municipality of ", "");
 
     popupContent = true;
-    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
-    map.setFilter("conservationAuthority2", [
+
+    // this is to filter the map so that it shows red boundary on the jurisdiction that people select
+    map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
+    map.setFilter("municipalities-border-highlight", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("conservationAuthority-border-highlight", [
       "==",
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
     ]);
   }
-
+  // the dropdown for regional
   function selectRegDropdown() {
     selectedJurisdiction = [];
     municipalFilter = [];
@@ -272,15 +300,18 @@
       .replace("Regional Municipality of ", "");
 
     popupContent = true;
-    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
-    map.setFilter("conservationAuthority2", [
+
+    // this is to filter the map so that it shows red boundary on the jurisdiction that people select
+    map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
+    map.setFilter("municipalities-border-highlight", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("conservationAuthority-border-highlight", [
       "==",
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
     ]);
   }
 
+  // the dropdown for conservation authority
   function selectConDropdown() {
     selectedJurisdiction = [];
     municipalFilter = [];
@@ -301,9 +332,11 @@
       .replace("Regional Municipality of ", "");
 
     popupContent = true;
-    map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border2", ["==", ["get", "CSDNAME"], clean]);
-    map.setFilter("conservationAuthority2", [
+
+    // this is to filter the map so that it shows red boundary on the jurisdiction that people select
+    map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
+    map.setFilter("municipalities-border-highlight", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("conservationAuthority-border-highlight", [
       "==",
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
@@ -311,17 +344,22 @@
   }
   // ============================Loading Data and Maps=============================================
 
+  // obtain a data for each level of government
   let conservationList = jurisDictionListing("CONSERVATION_NAME");
   let regionList = jurisDictionListing("REGION_NAME");
   let municipalList = jurisDictionListing("MUNICIPAL_NAME");
+
+  
 
   onMount(async () => {
     // only load the maps when the google sheet data is loaded
     // read the csvfile from google sheets
 
-    const csv = await processCsv(csvLink);
-    const dataLoaded = handleCsvData(csv.data, csv.meta.fields);
-
+    console.log(dataLoaded)
+    
+    const csv = await processCsv(municipalCsv);
+    dataLoaded = handleCsvData(csv.data, csv.meta.fields);
+    
     if (dataLoaded) {
       map = new maplibregl.Map({
         container: "map",
@@ -438,7 +476,7 @@
           },
         });
         map.addLayer({
-          id: "conservationAuthority2",
+          id: "conservationAuthority-border-highlight",
           type: "line",
           source: "conservationAuthority",
           layout: {},
@@ -450,7 +488,7 @@
         });
 
         map.addLayer({
-          id: "uppertier-border2",
+          id: "uppertier-border-highlight",
           type: "line",
           source: "uppertier",
           layout: {},
@@ -461,7 +499,7 @@
           filter: ["==", ["get", "CDNAME"], ""],
         });
         map.addLayer({
-          id: "municipalities-border2",
+          id: "municipalities-border-highlight",
           type: "line",
           source: "municipalities",
           layout: {},
@@ -505,13 +543,13 @@
           .replace("Town of ", "")
           .replace("Regional Municipality of ", "");
 
-        map.setFilter("uppertier-border2", ["==", ["get", "CDNAME"], clean]);
-        map.setFilter("municipalities-border2", [
+        map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
+        map.setFilter("municipalities-border-highlight", [
           "==",
           ["get", "CSDNAME"],
           clean,
         ]);
-        map.setFilter("conservationAuthority2", [
+        map.setFilter("conservationAuthority-border-highlight", [
           "==",
           ["get", "LEGAL_NAME"],
           jurisdictionInfo,
@@ -620,8 +658,7 @@
 </script>
 
 <main>
-
-
+  
   <div id="map" />
   <div class="intro">
     <h1>GTA Flood Data Equity</h1>
@@ -632,6 +669,7 @@
     <span class="dot" style= "background-color: #2c7da0"><p style="font-weight: bold; color: white; margin-left: 4px;">4+</p></span>
     <span class="dot" style= "background-color: #2a6f97"><p style="font-weight: bold; color: white; margin-left: 4px;">7+</p></span>
     <span class="dot" style= "background-color: #013a63"><p style="font-weight: bold; color: white; margin-left: 1px;">10+</p></span>
+    
     <p id="info">
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
         >Michael Liu</a
@@ -832,7 +870,7 @@
   }
 
   h1 {
-    font-size: 24px;
+    font-size: 40px;
     font-family: TradeGothicBold;
     padding: 0px;
     padding-left: 4px;
@@ -843,6 +881,7 @@
     color: #1e3765;
     /* background-color: #F1C500; */
     /* -webkit-text-stroke: 1px #6FC7EA; */
+    font-weight: bold;
   }
 
   h2 {
