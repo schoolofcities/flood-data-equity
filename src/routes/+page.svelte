@@ -1,14 +1,15 @@
 <script>
-  import {onMount} from "svelte";
+  import { onMount } from "svelte";
+  import {Icon} from 'svelte-icon'
   import maplibregl from "maplibre-gl";
-  import {ScaleControl, NavigationControl} from "maplibre-gl";
+  import { ScaleControl, NavigationControl } from "maplibre-gl";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
   import * as turf from "@turf/turf"; // this is for fitting the map boundary to GTA municipalities
   import lookupTable from "../data/lookupTable.json";
-  import Select from "svelte-select";
   import Papa from "papaparse";
+  import logo from "../assets/top-logo-full.svg"
 
   const municipalCsv =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
@@ -33,7 +34,11 @@
   let regionalData = []; // storing regional data and links
   let conservationData = []; // storing conservation authority data and links
   let selectedJurisdiction = []; //storing selected jurisdiction data and links.
-  let dataLoaded = false
+  let dataLoaded = false;
+  let query = ""; //This is the input address from users.
+  let lat;
+  let lon;
+  let results;
 
   var cityList = [
     "BRAMPTON",
@@ -107,14 +112,14 @@
     regionalData = regionalData.data;
     conservationData = conservationData.data;
 
-    console.log(municipalData)
-    console.log(regionalData)
-    console.log(conservationData)
+    console.log(municipalData);
+    console.log(regionalData);
+    console.log(conservationData);
   });
 
   // loading lookuptable to create unique jurisdiction lists.(i.e all the names of the municipalities)
   function jurisDictionListing(jurisdiction) {
-    // jurisdiction is the level of government we want to pull from. 
+    // jurisdiction is the level of government we want to pull from.
     // inputs includes:  MUNICIPAL_NAME, REGIONAL_NAME, CONSERVATION_NAME
     let filteredList = [];
     for (let i = 0; i < lookupTable.length; i++) {
@@ -146,10 +151,10 @@
   }
 
   function dataFiltering(csvData, jurisdictionList) {
-    // csvData is the municipal, regional, and conservation authority data csvData contains all the data for each respective level of government, 
-    // we don't need all that data, so we need this function to filter the ones we want. 
+    // csvData is the municipal, regional, and conservation authority data csvData contains all the data for each respective level of government,
+    // we don't need all that data, so we need this function to filter the ones we want.
 
-    // jurisdictionList is a list of relevant jurisdictions that we got from the govFiltering() function. 
+    // jurisdictionList is a list of relevant jurisdictions that we got from the govFiltering() function.
 
     // we want to loop through each jurisdiction that is within the jurisdiction list, for each jurisdiction,
     // add the fitting rows into the matching list
@@ -164,14 +169,14 @@
         }
       }
     }
-    console.log(matchingList)
+    console.log(matchingList);
     return matchingList;
   }
 
   function governmentList(jurisdiction) {
     // jurisdiction is the selected value from the drop down menu, that value will come from the selectMunDropdown, selectRegDropdown, selectConDropdown
-    // the function will return two lists, if jurisdiction is regional, it will return municipal and conservation, if jurisdiction is conservation, 
-    // it will return municipal and regional, if jurisdiction is municipal, then it returns conservation and regional    
+    // the function will return two lists, if jurisdiction is regional, it will return municipal and conservation, if jurisdiction is conservation,
+    // it will return municipal and regional, if jurisdiction is municipal, then it returns conservation and regional
     let region = [];
     let conservation = [];
     let municipal = [];
@@ -197,7 +202,7 @@
       // these are the combined list of other jurisdictions the selected jurisdiction overlaps
       municipalFilter = dataFiltering(municipalData, municipal);
       conservationFilter = dataFiltering(conservationData, conservation);
-      regionalFilter = [] // have this here so that it clears out the municipalFilter values from previous selection
+      regionalFilter = []; // have this here so that it clears out the municipalFilter values from previous selection
       return [selectedJurisdiction, municipalFilter, conservationFilter];
     } else if (jurisdiction.endsWith("Authority")) {
       // if this is a conservation authority
@@ -218,7 +223,7 @@
       // these are the combined list of other jurisdictions the selected one overlaps
       municipalFilter = dataFiltering(municipalData, municipal);
       regionalFilter = dataFiltering(regionalData, region);
-      conservationFilter = [] // have this here so that it clears out the municipalFilter values from previous selection
+      conservationFilter = []; // have this here so that it clears out the municipalFilter values from previous selection
       return [selectedJurisdiction, municipalFilter, regionalFilter];
     } else {
       municipal = [];
@@ -241,7 +246,7 @@
       // these are the combined list of other jurisdictions the selected one overlaps
       regionalFilter = dataFiltering(regionalData, region);
       conservationFilter = dataFiltering(conservationData, conservation);
-      municipalFilter = [] // have this here so that it clears out the municipalFilter values from previous selection
+      municipalFilter = []; // have this here so that it clears out the municipalFilter values from previous selection
       return [selectedJurisdiction, regionalFilter, conservationFilter];
     }
   }
@@ -270,13 +275,25 @@
     popupContent = true;
 
     // this is to filter the map so that it shows red boundary on the jurisdiction that people select
-    map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border-highlight", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("uppertier-border-highlight", [
+      "==",
+      ["get", "CDNAME"],
+      clean,
+    ]);
+    map.setFilter("municipalities-border-highlight", [
+      "==",
+      ["get", "CSDNAME"],
+      clean,
+    ]);
     map.setFilter("conservationAuthority-border-highlight", [
       "==",
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
     ]);
+    if (map.getSource(`address ${lon}`)) {
+      map.removeSource(`address ${lon}`);
+      map.removeLayer(`address-layer ${lon}`);
+    }
   }
   // the dropdown for regional
   function selectRegDropdown() {
@@ -302,13 +319,25 @@
     popupContent = true;
 
     // this is to filter the map so that it shows red boundary on the jurisdiction that people select
-    map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border-highlight", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("uppertier-border-highlight", [
+      "==",
+      ["get", "CDNAME"],
+      clean,
+    ]);
+    map.setFilter("municipalities-border-highlight", [
+      "==",
+      ["get", "CSDNAME"],
+      clean,
+    ]);
     map.setFilter("conservationAuthority-border-highlight", [
       "==",
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
     ]);
+    if (map.getSource(`address ${lon}`)) {
+      map.removeSource(`address ${lon}`);
+      map.removeLayer(`address-layer ${lon}`);
+    }
   }
 
   // the dropdown for conservation authority
@@ -334,13 +363,25 @@
     popupContent = true;
 
     // this is to filter the map so that it shows red boundary on the jurisdiction that people select
-    map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
-    map.setFilter("municipalities-border-highlight", ["==", ["get", "CSDNAME"], clean]);
+    map.setFilter("uppertier-border-highlight", [
+      "==",
+      ["get", "CDNAME"],
+      clean,
+    ]);
+    map.setFilter("municipalities-border-highlight", [
+      "==",
+      ["get", "CSDNAME"],
+      clean,
+    ]);
     map.setFilter("conservationAuthority-border-highlight", [
       "==",
       ["get", "LEGAL_NAME"],
       jurisdictionInfo,
     ]);
+    if (map.getSource(`address ${lon}`)) {
+      map.removeSource(`address ${lon}`);
+      map.removeLayer(`address-layer ${lon}`);
+    }
   }
   // ============================Loading Data and Maps=============================================
 
@@ -349,17 +390,15 @@
   let regionList = jurisDictionListing("REGION_NAME");
   let municipalList = jurisDictionListing("MUNICIPAL_NAME");
 
-  
-
   onMount(async () => {
     // only load the maps when the google sheet data is loaded
     // read the csvfile from google sheets
 
-    console.log(dataLoaded)
-    
+    console.log(dataLoaded);
+
     const csv = await processCsv(municipalCsv);
     dataLoaded = handleCsvData(csv.data, csv.meta.fields);
-    
+
     if (dataLoaded) {
       map = new maplibregl.Map({
         container: "map",
@@ -395,14 +434,6 @@
           type: "geojson",
           data: conservationAuthority,
         });
-        map.addSource("municipalities", {
-          type: "geojson",
-          data: municipalities,
-        });
-        map.addSource("uppertier", {
-          type: "geojson",
-          data: uppertier,
-        });
         map.addLayer({
           id: "conservationAuthority-fill",
           type: "fill",
@@ -413,6 +444,16 @@
             "fill-opacity": 0,
           },
         });
+
+        map.addSource("municipalities", {
+          type: "geojson",
+          data: municipalities,
+        });
+        map.addSource("uppertier", {
+          type: "geojson",
+          data: uppertier,
+        });
+
         map.addLayer({
           id: "municipalities",
           type: "fill",
@@ -542,8 +583,16 @@
           .replace("City of ", "")
           .replace("Town of ", "")
           .replace("Regional Municipality of ", "");
+        if (map.getSource(`address ${lon}`)) {
+          map.removeSource(`address ${lon}`);
+          map.removeLayer(`address-layer ${lon}`);
+        }
 
-        map.setFilter("uppertier-border-highlight", ["==", ["get", "CDNAME"], clean]);
+        map.setFilter("uppertier-border-highlight", [
+          "==",
+          ["get", "CDNAME"],
+          clean,
+        ]);
         map.setFilter("municipalities-border-highlight", [
           "==",
           ["get", "CSDNAME"],
@@ -565,11 +614,6 @@
   // Geocoder for people to input their address and zoom to input address
   const baseUrl =
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
-
-  let query = ""; //This is the input address from users.
-  let lat;
-  let lon;
-  let results;
 
   const getResults = async () => {
     results = await fetch(baseUrl + query).then((res) => res.json());
@@ -601,6 +645,22 @@
         // this animation is considered essential with respect to prefers-reduced-motion
         essential: true,
       });
+      map.setFilter("uppertier-border-highlight", [
+        "==",
+        ["get", "CDNAME"],
+        "",
+      ]);
+      map.setFilter("municipalities-border-highlight", [
+        "==",
+        ["get", "CSDNAME"],
+        "",
+      ]);
+      map.setFilter("conservationAuthority-border-highlight", [
+        "==",
+        ["get", "LEGAL_NAME"],
+        "",
+      ]);
+
       // add point to show the searched address
       map.addSource(`address ${lon}`, {
         type: "geojson",
@@ -653,23 +713,49 @@
       alert("Sorry, no geocoding results for " + query);
     }
   };
-
-
 </script>
 
 <main>
-  
   <div id="map" />
+    <div id="logo">
+      <a href="https://www.schoolofcities.utoronto.ca/"><img src={logo} alt="School of Cities"></a>
+    </div>
   <div class="intro">
-    <h1>GTA Flood Data Equity</h1>
-    <p1> # of Municipal Flood Data Layers </p1> <br>
-    <span class="dot" style= "background-color: grey"><p style="font-weight: bold; color: white; margin-left: 9px;"><b>0</p></span>
-    <span class="dot" style= "background-color: #a9d6e5"><p style="font-weight: bold; color: black; margin-left: 5px;">1+</p></span>
-    <span class="dot" style= "background-color: #89c2d9"><p style="font-weight: bold; color: black; margin-left: 4px;">3+</p></span>
-    <span class="dot" style= "background-color: #2c7da0"><p style="font-weight: bold; color: white; margin-left: 4px;">4+</p></span>
-    <span class="dot" style= "background-color: #2a6f97"><p style="font-weight: bold; color: white; margin-left: 4px;">7+</p></span>
-    <span class="dot" style= "background-color: #013a63"><p style="font-weight: bold; color: white; margin-left: 1px;">10+</p></span>
     
+    <h1>Flood Data Equity</h1>
+    <h3>of the Greater Toronto Area (GTA)</h3>
+    <p1> # of Municipal Flood Data Layers </p1> <br />
+    <span class="dot" style="background-color: grey"
+      ><p style="font-weight: bold; color: white; margin-left: 9px;">
+        <b>0</b>
+      </p></span
+    >
+    <span class="dot" style="background-color: #a9d6e5"
+      ><p style="font-weight: bold; color: black; margin-left: 5px;">
+        1+
+      </p></span
+    >
+    <span class="dot" style="background-color: #89c2d9"
+      ><p style="font-weight: bold; color: black; margin-left: 4px;">
+        3+
+      </p></span
+    >
+    <span class="dot" style="background-color: #2c7da0"
+      ><p style="font-weight: bold; color: white; margin-left: 4px;">
+        4+
+      </p></span
+    >
+    <span class="dot" style="background-color: #2a6f97"
+      ><p style="font-weight: bold; color: white; margin-left: 4px;">
+        7+
+      </p></span
+    >
+    <span class="dot" style="background-color: #013a63"
+      ><p style="font-weight: bold; color: white; margin-left: 1px;">
+        10+
+      </p></span
+    >
+
     <p id="info">
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
         >Michael Liu</a
@@ -734,9 +820,8 @@
             >
           </p>
         {/each}
-        <p>  </p>
+        <p></p>
       {/if}
-      
 
       <!-- Present Each List of CSV Links-->
       {#if municipalFilter}
@@ -759,10 +844,10 @@
               >
             </p>
           {/each}
-          <p>  </p>
+          <p></p>
         {/if}
       {/if}
-      <p>  </p>
+      <p></p>
       <!-- Regional Layers -->
       {#if regionalFilter}
         {#if regionalFilter.length > 0}
@@ -782,10 +867,9 @@
               >
             </p>
           {/each}
-          <p>  </p>
+          <p></p>
         {/if}
       {/if}
-      
 
       {#if conservationFilter}
         {#if conservationFilter.length > 0}
@@ -807,13 +891,12 @@
               >
             </p>
           {/each}
-          <p>  </p>
+          <p></p>
         {/if}
       {/if}
     {/if}
-    <p>   </p>
+    <p></p>
   </div>
-
 </main>
 
 <style>
@@ -874,10 +957,10 @@
     font-family: TradeGothicBold;
     padding: 0px;
     padding-left: 4px;
-    padding-top: 2px;
-    padding-bottom: 3px;
+
+    /*padding-bottom: 3px;*/
     margin: 0px;
-    margin-bottom: 7px;
+    margin-bottom: 0px;
     color: #1e3765;
     /* background-color: #F1C500; */
     /* -webkit-text-stroke: 1px #6FC7EA; */
@@ -895,7 +978,16 @@
     /* -webkit-text-stroke: 1px #6FC7EA; */
     text-decoration: underline;
   }
-
+  h3 {
+    font-size: 20px;
+    font-family: TradeGothicBold;
+    padding-left: 4px;
+    margin: 0px;
+    margin-top: 8px;
+    /* margin-bottom: -4px; */
+    color: #1e3765;
+    /* -webkit-text-stroke: 1px #6FC7EA; */
+  }
   #subtitle {
     font-family: TradeGothicBold;
     color: #6d247a;
@@ -944,14 +1036,14 @@
     font-size: 12px;
     width: 25vw;
     margin-bottom: 20px;
-    font-family: TradeGothicBold;
+    font-family: RobotoRegular;
     border-width: 0px;
   }
 
   input {
     width: 24vw;
     height: 20px;
-    font-family: TradeGothicBold;
+    font-family: RobotoRegular;
     color: #6d247a;
     border-width: 0px;
     margin-right: 5px;
@@ -987,5 +1079,17 @@
     opacity: 0.7;
   }
 
- 
+  #logo {
+    position: absolute;
+		max-width: 550px;
+		height: 5vh;
+    right:0px;
+    bottom:0px;
+    background-color: rgb(254, 251, 249, 0.5);
+		z-index: 6;
+	}
+  img {
+		height: 5vh;
+		color: blue;
+	}
 </style>
