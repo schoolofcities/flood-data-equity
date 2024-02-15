@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import {Icon} from 'svelte-icon'
   import maplibregl from "maplibre-gl";
   import { ScaleControl, NavigationControl } from "maplibre-gl";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
@@ -714,7 +713,6 @@
     }
   };
 </script>
-
 <main>
   <div id="map" />
     <div id="logo">
