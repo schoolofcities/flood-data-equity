@@ -1,0 +1,552 @@
+[
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518001,
+    "CSDNAME": "Pickering",
+    "MUNICIPAL_NAME": "City of Pickering",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518001,
+    "CSDNAME": "Pickering",
+    "MUNICIPAL_NAME": "City of Pickering",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518005,
+    "CSDNAME": "Ajax",
+    "MUNICIPAL_NAME": "Town of Ajax",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518005,
+    "CSDNAME": "Ajax",
+    "MUNICIPAL_NAME": "Town of Ajax",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518009,
+    "CSDNAME": "Whitby",
+    "MUNICIPAL_NAME": "Town of Whitby",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518013,
+    "CSDNAME": "Oshawa",
+    "MUNICIPAL_NAME": "Town of Oshawa",
+    "CA_ID": 14,
+    "CONSERVATION_NAME": "Kawartha Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518013,
+    "CSDNAME": "Oshawa",
+    "MUNICIPAL_NAME": "Town of Oshawa",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518017,
+    "CSDNAME": "Clarington",
+    "MUNICIPAL_NAME": "Town of Clarington",
+    "CA_ID": 14,
+    "CONSERVATION_NAME": "Kawartha Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518017,
+    "CSDNAME": "Clarington",
+    "MUNICIPAL_NAME": "Town of Clarington",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518017,
+    "CSDNAME": "Clarington",
+    "MUNICIPAL_NAME": "Town of Clarington",
+    "CA_ID": 28,
+    "CONSERVATION_NAME": "Otonabee Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518017,
+    "CSDNAME": "Clarington",
+    "MUNICIPAL_NAME": "Town of Clarington",
+    "CA_ID": 31,
+    "CONSERVATION_NAME": "Ganaraska Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518020,
+    "CSDNAME": "Scugog",
+    "MUNICIPAL_NAME": "Town of Scugog",
+    "CA_ID": 14,
+    "CONSERVATION_NAME": "Kawartha Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518020,
+    "CSDNAME": "Scugog",
+    "MUNICIPAL_NAME": "Town of Scugog",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518020,
+    "CSDNAME": "Scugog",
+    "MUNICIPAL_NAME": "Town of Scugog",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518020,
+    "CSDNAME": "Scugog",
+    "MUNICIPAL_NAME": "Town of Scugog",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518029,
+    "CSDNAME": "Uxbridge",
+    "MUNICIPAL_NAME": "Town of Uxbridge",
+    "CA_ID": 14,
+    "CONSERVATION_NAME": "Kawartha Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518029,
+    "CSDNAME": "Uxbridge",
+    "MUNICIPAL_NAME": "Town of Uxbridge",
+    "CA_ID": 33,
+    "CONSERVATION_NAME": "Central Lake Ontario Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518029,
+    "CSDNAME": "Uxbridge",
+    "MUNICIPAL_NAME": "Town of Uxbridge",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518029,
+    "CSDNAME": "Uxbridge",
+    "MUNICIPAL_NAME": "Town of Uxbridge",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518039,
+    "CSDNAME": "Brock",
+    "MUNICIPAL_NAME": "Town of Brock",
+    "CA_ID": 14,
+    "CONSERVATION_NAME": "Kawartha Region Conservation Authority"
+  },
+  {
+    "CDUID": 3518,
+    "CDNAME": "Durham",
+    "REGION_NAME": "Regional Municipality of Durham",
+    "CSDUID": 3518039,
+    "CSDNAME": "Brock",
+    "MUNICIPAL_NAME": "Town of Brock",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519028,
+    "CSDNAME": "Vaughan",
+    "MUNICIPAL_NAME": "City of Vaughan",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519036,
+    "CSDNAME": "Markham",
+    "MUNICIPAL_NAME": "City of Markham",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519038,
+    "CSDNAME": "Richmond Hill",
+    "MUNICIPAL_NAME": "City of Richmond Hill",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519038,
+    "CSDNAME": "Richmond Hill",
+    "MUNICIPAL_NAME": "City of Richmond Hill",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519044,
+    "CSDNAME": "Whitchurch-Stouffville",
+    "MUNICIPAL_NAME": "Town of Whitchurch-Stouffville",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519044,
+    "CSDNAME": "Whitchurch-Stouffville",
+    "MUNICIPAL_NAME": "Town of Whitchurch-Stouffville",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519046,
+    "CSDNAME": "Aurora",
+    "MUNICIPAL_NAME": "Town of Aurora",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519046,
+    "CSDNAME": "Aurora",
+    "MUNICIPAL_NAME": "Town of Aurora",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519048,
+    "CSDNAME": "Newmarket",
+    "MUNICIPAL_NAME": "Town of Newmarket",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519049,
+    "CSDNAME": "King",
+    "MUNICIPAL_NAME": "Town of King",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519049,
+    "CSDNAME": "King",
+    "MUNICIPAL_NAME": "Town of King",
+    "CA_ID": 26,
+    "CONSERVATION_NAME": "Nottawasaga Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519049,
+    "CSDNAME": "King",
+    "MUNICIPAL_NAME": "Town of King",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519054,
+    "CSDNAME": "East Gwillimbury",
+    "MUNICIPAL_NAME": "Town of East Gwillimbury",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3519,
+    "CDNAME": "York",
+    "REGION_NAME": "Regional Municipality of York",
+    "CSDUID": 3519070,
+    "CSDNAME": "Georgina",
+    "MUNICIPAL_NAME": "Town of Georgina",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3520,
+    "CDNAME": "Toronto",
+    "REGION_NAME": "City of Toronto",
+    "CSDUID": 3520005,
+    "CSDNAME": "Toronto",
+    "MUNICIPAL_NAME": "City of Toronto",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3520,
+    "CDNAME": "Toronto",
+    "REGION_NAME": "City of Toronto",
+    "CSDUID": 3520005,
+    "CSDNAME": "Toronto",
+    "MUNICIPAL_NAME": "City of Toronto",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521005,
+    "CSDNAME": "Mississauga",
+    "MUNICIPAL_NAME": "City of Mississauga",
+    "CA_ID": 16,
+    "CONSERVATION_NAME": "Halton Region Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521005,
+    "CSDNAME": "Mississauga",
+    "MUNICIPAL_NAME": "City of Mississauga",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521005,
+    "CSDNAME": "Mississauga",
+    "MUNICIPAL_NAME": "City of Mississauga",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521010,
+    "CSDNAME": "Brampton",
+    "MUNICIPAL_NAME": "City of Brampton",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521010,
+    "CSDNAME": "Brampton",
+    "MUNICIPAL_NAME": "City of Brampton",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521024,
+    "CSDNAME": "Caledon",
+    "MUNICIPAL_NAME": "Town of Caledon",
+    "CA_ID": 27,
+    "CONSERVATION_NAME": "Lake Simcoe Region Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521024,
+    "CSDNAME": "Caledon",
+    "MUNICIPAL_NAME": "Town of Caledon",
+    "CA_ID": 26,
+    "CONSERVATION_NAME": "Nottawasaga Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521024,
+    "CSDNAME": "Caledon",
+    "MUNICIPAL_NAME": "Town of Caledon",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3521,
+    "CDNAME": "Peel",
+    "REGION_NAME": "Regional Municipality of Peel",
+    "CSDUID": 3521024,
+    "CSDNAME": "Caledon",
+    "MUNICIPAL_NAME": "Town of Caledon",
+    "CA_ID": 34,
+    "CONSERVATION_NAME": "Toronto and Region Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524001,
+    "CSDNAME": "Oakville",
+    "MUNICIPAL_NAME": "Town of Oakville",
+    "CA_ID": 16,
+    "CONSERVATION_NAME": "Halton Region Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524001,
+    "CSDNAME": "Oakville",
+    "MUNICIPAL_NAME": "Town of Oakville",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524002,
+    "CSDNAME": "Burlington",
+    "MUNICIPAL_NAME": "City of Burlington",
+    "CA_ID": 16,
+    "CONSERVATION_NAME": "Halton Region Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524009,
+    "CSDNAME": "Milton",
+    "MUNICIPAL_NAME": "Town of Milton",
+    "CA_ID": 32,
+    "CONSERVATION_NAME": "Grand River Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524009,
+    "CSDNAME": "Milton",
+    "MUNICIPAL_NAME": "Town of Milton",
+    "CA_ID": 16,
+    "CONSERVATION_NAME": "Halton Region Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524009,
+    "CSDNAME": "Milton",
+    "MUNICIPAL_NAME": "Town of Milton",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524015,
+    "CSDNAME": "Halton Hills",
+    "MUNICIPAL_NAME": "Town of Halton Hills",
+    "CA_ID": 32,
+    "CONSERVATION_NAME": "Grand River Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524015,
+    "CSDNAME": "Halton Hills",
+    "MUNICIPAL_NAME": "Town of Halton Hills",
+    "CA_ID": 16,
+    "CONSERVATION_NAME": "Halton Region Conservation Authority"
+  },
+  {
+    "CDUID": 3524,
+    "CDNAME": "Halton",
+    "REGION_NAME": "Regional Municipality of Halton",
+    "CSDUID": 3524015,
+    "CSDNAME": "Halton Hills",
+    "MUNICIPAL_NAME": "Town of Halton Hills",
+    "CA_ID": 15,
+    "CONSERVATION_NAME": "Credit Valley Conservation Authority"
+  }
+]
