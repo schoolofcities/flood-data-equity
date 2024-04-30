@@ -464,19 +464,15 @@
               ["get", "MUN_LAYER"], // Property in your GeoJSON data containing the values
               "white",
               0,
-              "grey",
+              "lightgrey",
               1, // 1 or lower
-              "#a9d6e5",
-              3, // 3
-              "#89c2d9",
-              4, // 4-7
-              "#2c7da0",
-              7, // 7-10
-              "#2a6f97",
-              10,
-              "#013a63",
+              "#cbe0e8",
+              4, // 3
+              "#6FC7EA",
+              8,
+              "#00a6e8",
             ],
-            "fill-opacity": 0.7,
+            "fill-opacity": 0.5,
           },
         });
         map.addLayer({
@@ -485,7 +481,7 @@
           source: "municipalities",
           layout: {},
           paint: {
-            "line-color": "#000000", // Border color
+            "line-color": "#1E3765", // Border color
             "line-width": 1, // Border width
           },
         });
@@ -495,8 +491,8 @@
           source: "uppertier",
           layout: {},
           paint: {
-            "line-color": "grey", // Border color
-            "line-width": 3, // Border width
+            "line-color": "#1E3765", // Border color
+            "line-width": 4, // Border width
           },
         });
 
@@ -510,7 +506,7 @@
           source: "conservationAuthority",
           layout: {},
           paint: {
-            "line-color": "grey", // Border color
+            "line-color": "#007FA3", // Border color
             "line-width": 2, // Border width
             "line-dasharray": [2, 2],
           },
@@ -521,8 +517,8 @@
           source: "conservationAuthority",
           layout: {},
           paint: {
-            "line-color": "#DC4633", // Border color
-            "line-width": 3.5, // Border width
+            "line-color": "#F1C500", // Border color
+            "line-width": 7, // Border width
           },
           filter: ["==", ["get", "LEGAL_NAME"], ""],
         });
@@ -533,8 +529,8 @@
           source: "uppertier",
           layout: {},
           paint: {
-            "line-color": "#DC4633", // Border color
-            "line-width": 4, // Border width
+            "line-color": "#F1C500", // Border color
+            "line-width": 7, // Border width
           },
           filter: ["==", ["get", "CDNAME"], ""],
         });
@@ -544,8 +540,8 @@
           source: "municipalities",
           layout: {},
           paint: {
-            "line-color": "#DC4633", // Border color
-            "line-width": 4, // Border width
+            "line-color": "#F1C500", // Border color
+            "line-width": 7, // Border width
           },
           filter: ["==", ["get", "CSDNAME"], ""],
         });
@@ -720,51 +716,14 @@
       ><img src={logo} alt="School of Cities" /></a
     >
   </div>
-  
 
   <div class="intro">
     <h1>Flood Data Equity</h1>
-    <h3>of the Greater Toronto Area (GTA)</h3>
-    <p1> # of Municipal Flood Data Layers </p1> <br />
-    <span class="dot" style="background-color: grey"
-      ><p style="font-weight: bold; color: white; margin-left: 9px;">
-        <b>0</b>
-      </p></span
-    >
-    <span class="dot" style="background-color: #a9d6e5"
-      ><p style="font-weight: bold; color: black; margin-left: 5px;">
-        1+
-      </p></span
-    >
-    <span class="dot" style="background-color: #89c2d9"
-      ><p style="font-weight: bold; color: black; margin-left: 4px;">
-        3+
-      </p></span
-    >
-    <span class="dot" style="background-color: #2c7da0"
-      ><p style="font-weight: bold; color: white; margin-left: 4px;">
-        4+
-      </p></span
-    >
-    <span class="dot" style="background-color: #2a6f97"
-      ><p style="font-weight: bold; color: white; margin-left: 4px;">
-        7+
-      </p></span
-    >
-    <span class="dot" style="background-color: #013a63"
-      ><p style="font-weight: bold; color: white; margin-left: 1px;">
-        10+
-      </p></span
-    >
+    <h3>in the Greater Toronto Area (GTA)</h3>
+   
+    <p id="info">One or two succinct sentences about this page, and why it is important. </p>
 
-    <p id="info">
-      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
-        >Michael Liu</a
-      >
-      and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
-      <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
-    </p>
-
+    
     <button
     id="about-button"
     on:click={() => {
@@ -772,8 +731,9 @@
     }}
     style="background-color: {about
         ? '#1e3765'
-        : ''}; color: {about ? 'white' : 'black'}">About This Research
-        </button>
+        : '#fff'}; color: {about ? 'white' : 'black'}"
+    >Click here to read more about this research
+    </button>
 
     
     <p1><b> Select A Local Municipality:</b> </p1>
@@ -817,14 +777,46 @@
     <input bind:value={query} placeholder="i.e. 100 St George St, Toronto" />
     <button on:click={getResults} disabled={query.length < 1}>Search</button>
 
+    <p1> # of Flood Data Layers by Municipality</p1> <br />
+    <span class="dot" style="background-color: lightgrey"
+      ><p style="font-weight: bold; color: white; margin-left: 9px;">
+        <b>0</b>
+      </p></span
+    >
+    <span class="dot" style="background-color: #cbe0e8"
+      ><p style="font-weight: bold; color: black; margin-left: 5px;">
+        1+
+      </p></span
+    >
+    <span class="dot" style="background-color: #6fc7ea"
+      ><p style="font-weight: bold; color: black; margin-left: 4px;">
+        4+
+      </p></span
+    >
+    <span class="dot" style="background-color: #00a6e8"
+      ><p style="font-weight: bold; color: white; margin-left: 4px;">
+        8+
+      </p></span
+    >
+    <!-- <span class="dot" style="background-color: #2a6f97"
+      ><p style="font-weight: bold; color: white; margin-left: 4px;">
+        7+
+      </p></span
+    >
+    <span class="dot" style="background-color: #013a63"
+      ><p style="font-weight: bold; color: white; margin-left: 1px;">
+        10+
+      </p></span
+    > -->
+
     {#if popupContent}
-      <h1>{jurisdictionInfo}</h1>
+      <h2 id="datatitle">{jurisdictionInfo.toUpperCase()}</h2>
       <!-- Present Each List of CSV Links-->
       {#if selectedJurisdiction}
-        {#if !jurisdictionInfo.endsWith("Authority")}
-          <span id="subtitle"><b># of Layers: </b></span
-          >{selectedJurisdiction.length}
-        {/if}
+        
+          <!-- <span id="subtitlelayers"><b>{selectedJurisdiction.length} Layers</b></span
+          > -->
+        
         {#each selectedJurisdiction as entry, i}
           <p>
             <b>{i + 1}. </b><a href={entry.LINK} target="_blank"
@@ -838,7 +830,9 @@
       <!-- Present Each List of CSV Links-->
       {#if municipalFilter}
         {#if municipalFilter.length > 0}
-          <h2>Lower-Tier Municipalities ({municipalFilter.length} Layers)</h2>
+          <h3>Lower-Tier Municipalities 
+            <!-- ({municipalFilter.length} Layers) -->
+          </h3>
 
           {#each municipalFilter as entry, i}
             {#if i == 0}
@@ -863,7 +857,9 @@
       <!-- Regional Layers -->
       {#if regionalFilter}
         {#if regionalFilter.length > 0}
-          <h2>Regional Municipalities ({regionalFilter.length} Layers)</h2>
+          <h3>Regional Municipalities 
+            <!-- ({regionalFilter.length} Layers) -->
+          </h3>
 
           {#each regionalFilter as entry, i}
             {#if i == 0}
@@ -885,7 +881,7 @@
 
       {#if conservationFilter}
         {#if conservationFilter.length > 0}
-          <h2>Conservation Authorities ({conservationFilter.length} Layers)</h2>
+          <h3>Conservation Authorities ({conservationFilter.length} Layers)</h3>
 
           {#each conservationFilter as entry, i}
             {#if i == 0}
@@ -908,6 +904,17 @@
       {/if}
     {/if}
     <p></p>
+
+    <p id="info">
+      <br>
+      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
+        >Michael Liu</a
+      >
+      and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
+      <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
+      <br>
+    </p>
+
   </div>
   {#if about}
   <div class="container">
@@ -1028,6 +1035,7 @@
   </div>
 </div>
 {/if}
+
 </main>
 
 <style>
@@ -1076,10 +1084,10 @@
     font-size: 17px;
     font-family: TradeGothicBold;
     background-color: rgb(254, 251, 249, 1);
+    border-right: solid 1px #6FC7EA;
     color: #1e3765;
     padding: 10px;
     padding-right: 20px;
-    border-radius: 5px;
     overflow-x: hidden;
   }
 
@@ -1123,7 +1131,26 @@
     font-family: TradeGothicBold;
     color: #6d247a;
     font-size: 16px;
+    padding-left: 4px;
     font-weight: bold;
+  }
+
+  #subtitlelayers {
+    font-family: TradeGothicBold;
+    color: #1e3765;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  #datatitle {
+    font-family: TradeGothicBold;
+    text-decoration: none;
+    color: #6d247a;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: solid 1px #6FC7EA;
   }
 
   p {
@@ -1153,7 +1180,7 @@
   }
 
   #info {
-    font-size: 13px;
+    font-size: 14px;
     padding: 0px;
     padding-left: 4px;
     margin: 0px;
