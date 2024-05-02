@@ -38,7 +38,7 @@
   let lat;
   let lon;
   let results;
-  let about = true
+  let about = false;
   var cityList = [
     "BRAMPTON",
     "BURLINGTON",
@@ -721,7 +721,7 @@
   <div class="intro">
     <h1>~ Flood Data Equity ~</h1>
    
-    <p id="info">Search for data pertaining flood risk across the <span id="purple">Greater Toronto Area (GTA)</span>. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
+    <p id="info">Search in the <span id="purple">Greater Toronto Area (GTA)</span> pertaining to flooding risk. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
       <span 
       id="about-button"
       on:click={() => {
