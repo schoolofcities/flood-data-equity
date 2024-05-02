@@ -493,7 +493,7 @@
           layout: {},
           paint: {
             "line-color": "#1E3765", // Border color
-            "line-width": 4, // Border width
+            "line-width": 3, // Border width
           },
         });
 
