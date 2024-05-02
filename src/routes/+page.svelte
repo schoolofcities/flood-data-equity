@@ -111,9 +111,9 @@
     regionalData = regionalData.data;
     conservationData = conservationData.data;
 
-    console.log(municipalData);
-    console.log(regionalData);
-    console.log(conservationData);
+    // console.log(municipalData);
+    // console.log(regionalData);
+    // console.log(conservationData);
   });
 
   // loading lookuptable to create unique jurisdiction lists.(i.e all the names of the municipalities)
@@ -168,7 +168,7 @@
         }
       }
     }
-    console.log(matchingList);
+    // console.log(matchingList);
     return matchingList;
   }
 
@@ -257,7 +257,7 @@
 
     // get the filtered results
     jurisdictionInfo = selectedMun;
-    console.log(jurisdictionInfo);
+    // console.log(jurisdictionInfo);
     //filtering results
     selectedJurisdiction = governmentList(jurisdictionInfo)[0];
     regionalFilter = governmentList(jurisdictionInfo)[1];
@@ -302,7 +302,7 @@
 
     // get the filtered results
     jurisdictionInfo = selectedReg;
-    console.log(jurisdictionInfo);
+    // console.log(jurisdictionInfo);
     selectedJurisdiction = governmentList(jurisdictionInfo)[0];
     municipalFilter = governmentList(jurisdictionInfo)[1];
     conservationFilter = governmentList(jurisdictionInfo)[2];
@@ -393,7 +393,7 @@
     // only load the maps when the google sheet data is loaded
     // read the csvfile from google sheets
 
-    console.log(dataLoaded);
+    // console.log(dataLoaded);
 
     const csv = await processCsv(municipalCsv);
     dataLoaded = handleCsvData(csv.data, csv.meta.fields);
@@ -708,33 +708,29 @@
       alert("Sorry, no geocoding results for " + query);
     }
   };
+
 </script>
 <main>
   <div id="map" />
-  <div id="logo">
+  <!-- <div id="logo">
     <a href="https://www.schoolofcities.utoronto.ca/"
       ><img src={logo} alt="School of Cities" /></a
-    >
-  </div>
+    > </div>-->
+  
 
   <div class="intro">
-    <h1>Flood Data Equity</h1>
-    <h3>in the Greater Toronto Area (GTA)</h3>
+    <h1>~ Flood Data Equity ~</h1>
    
-    <p id="info">One or two succinct sentences about this page, and why it is important. </p>
-
-    
-    <button
-    id="about-button"
-    on:click={() => {
+    <p id="info">Search for data pertaining flood risk across the <span id="purple">Greater Toronto Area (GTA)</span>. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
+      <span 
+      id="about-button"
+      on:click={() => {
         about = true;
     }}
-    style="background-color: {about
-        ? '#1e3765'
-        : '#fff'}; color: {about ? 'white' : 'black'}"
-    >Click here to read more about this research
-    </button>
-
+      >
+      Click here to read more about this page and related research
+    </span>
+    </p>
     
     <p1><b> Select A Local Municipality:</b> </p1>
     <div class="bar" />
@@ -777,7 +773,7 @@
     <input bind:value={query} placeholder="i.e. 100 St George St, Toronto" />
     <button on:click={getResults} disabled={query.length < 1}>Search</button>
 
-    <p1> # of Flood Data Layers by Municipality</p1> <br />
+    <p1> # of Flood Data Layers by Lower-Tier Municipality</p1> <br />
     <span class="dot" style="background-color: lightgrey"
       ><p style="font-weight: bold; color: white; margin-left: 9px;">
         <b>0</b>
@@ -794,7 +790,7 @@
       </p></span
     >
     <span class="dot" style="background-color: #00a6e8"
-      ><p style="font-weight: bold; color: white; margin-left: 4px;">
+      ><p style="font-weight: bold; color: black; margin-left: 4px;">
         8+
       </p></span
     >
@@ -809,13 +805,24 @@
       </p></span
     > -->
 
+    
+    
+
     {#if popupContent}
+
+    <div id="available">
+      <p>Available datasets for selected area:</p>
+    </div>
+    
       <h2 id="datatitle">{jurisdictionInfo.toUpperCase()}</h2>
       <!-- Present Each List of CSV Links-->
       {#if selectedJurisdiction}
         
           <!-- <span id="subtitlelayers"><b>{selectedJurisdiction.length} Layers</b></span
           > -->
+        {#if selectedJurisdiction.length < 1}
+            <p>No data available<p>
+        {/if}
         
         {#each selectedJurisdiction as entry, i}
           <p>
@@ -881,7 +888,9 @@
 
       {#if conservationFilter}
         {#if conservationFilter.length > 0}
-          <h3>Conservation Authorities ({conservationFilter.length} Layers)</h3>
+          <h3>Conservation Authorities
+             <!-- ({conservationFilter.length} Layers) -->
+            </h3>
 
           {#each conservationFilter as entry, i}
             {#if i == 0}
@@ -914,6 +923,11 @@
       <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
       <br>
     </p>
+    <div id="logo">
+      <a href="https://www.schoolofcities.utoronto.ca/"
+        ><img src={logo} alt="School of Cities" /></a
+      >
+    </div>
 
   </div>
   {#if about}
@@ -1083,7 +1097,8 @@
     height: 100vh;
     font-size: 17px;
     font-family: TradeGothicBold;
-    background-color: rgb(254, 251, 249, 1);
+    background-color: #f8fbfc;
+    /* background-color: rgb(254, 251, 249, 1); */
     border-right: solid 1px #6FC7EA;
     color: #1e3765;
     padding: 10px;
@@ -1092,7 +1107,7 @@
   }
 
   h1 {
-    font-size: 40px;
+    font-size: 34px;
     font-family: TradeGothicBold;
     padding: 0px;
     padding-left: 4px;
@@ -1123,6 +1138,8 @@
     padding-left: 4px;
     margin: 0px;
     margin-top: 8px;
+    margin-bottom: 12px;
+    text-decoration: underline;
     /* margin-bottom: -4px; */
     color: #1e3765;
     /* -webkit-text-stroke: 1px #6FC7EA; */
@@ -1130,7 +1147,7 @@
   #subtitle {
     font-family: TradeGothicBold;
     color: #6d247a;
-    font-size: 16px;
+    font-size: 18px;
     padding-left: 4px;
     font-weight: bold;
   }
@@ -1146,22 +1163,25 @@
     font-family: TradeGothicBold;
     text-decoration: none;
     color: #6d247a;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: bold;
     margin-top: 15px;
     padding-top: 10px;
-    border-top: solid 1px #6FC7EA;
+  }
+
+  #purple {
+    color: #6d247a;
   }
 
   p {
     margin-top: 5px;
-    margin-left: 30px;
+    margin-left: 5px;
     margin-bottom: 15px;
     font-family: RobotoRegular;
     font-size: 14px;
     opacity: 1;
     color: #007fa3;
-    font-weight: bold;
+    /* font-weight: bold; */
   }
 
   p1 {
@@ -1180,7 +1200,7 @@
   }
 
   #info {
-    font-size: 14px;
+    font-size: 15px;
     padding: 0px;
     padding-left: 4px;
     margin: 0px;
@@ -1188,6 +1208,12 @@
     margin-top: 7px;
     padding-top: 7px;
     padding-bottom: 15px;
+  }
+
+  #available {
+    margin-top: 20px;
+    margin-bottom: -10px;
+    border-top: solid 1px #6FC7EA;
   }
 
   button {
@@ -1241,10 +1267,14 @@
     position: absolute;
     max-width: 550px;
     height: 5vh;
-    right: 0px;
-    bottom: 0px;
-    background-color: rgb(254, 251, 249, 0.5);
+    /* right: 0px; */
+    /* bottom: 0px; */
+    /* background-color: rgb(254, 251, 249, 0.5); */
     z-index: 6;
+    opacity: 0.7;
+  }
+  #logo:hover {
+    opacity: 1;
   }
   img {
     height: 5vh;
@@ -1326,16 +1356,11 @@
 
   }
   #about-button{
-    width: 100%;
-    height: 40px;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 0px;
-    text-align: left;
-    font-family: RobotoRegular;
+    text-decoration: underline;
   }
   #about-button:hover {
     cursor: pointer;
+    color: #dc4633;
 
   }
   
