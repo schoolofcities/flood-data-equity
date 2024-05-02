@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import maplibregl from "maplibre-gl";
   import { ScaleControl, NavigationControl } from "maplibre-gl";
+  import cartoBasemap from "../assets/carto-basemap.json";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
@@ -401,7 +402,7 @@
     if (dataLoaded) {
       map = new maplibregl.Map({
         container: "map",
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        style: cartoBasemap, //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
         center: [-79.0, 44.1], // starting position
         zoom: 8, // starting zoom;
         minZoom: 2,
