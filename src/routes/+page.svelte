@@ -2,13 +2,14 @@
   import { onMount } from "svelte";
   import maplibregl from "maplibre-gl";
   import { ScaleControl, NavigationControl } from "maplibre-gl";
+  import cartoBasemap from "../assets/carto-basemap.json";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
   import uppertier from "../data/gta-upper-tier-municipalities.geo.json";
   import * as turf from "@turf/turf"; // this is for fitting the map boundary to GTA municipalities
   import lookupTable from "../data/lookupTable.json";
   import Papa from "papaparse";
-  import logo from "../assets/top-logo-full.svg"
+  import logo from "../assets/top-logo-full.svg";
 
   const municipalCsv =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
@@ -38,7 +39,7 @@
   let lat;
   let lon;
   let results;
-
+  let about = false;
   var cityList = [
     "BRAMPTON",
     "BURLINGTON",
@@ -111,9 +112,9 @@
     regionalData = regionalData.data;
     conservationData = conservationData.data;
 
-    console.log(municipalData);
-    console.log(regionalData);
-    console.log(conservationData);
+    // console.log(municipalData);
+    // console.log(regionalData);
+    // console.log(conservationData);
   });
 
   // loading lookuptable to create unique jurisdiction lists.(i.e all the names of the municipalities)
@@ -168,7 +169,7 @@
         }
       }
     }
-    console.log(matchingList);
+    // console.log(matchingList);
     return matchingList;
   }
 
@@ -257,7 +258,7 @@
 
     // get the filtered results
     jurisdictionInfo = selectedMun;
-    console.log(jurisdictionInfo);
+    // console.log(jurisdictionInfo);
     //filtering results
     selectedJurisdiction = governmentList(jurisdictionInfo)[0];
     regionalFilter = governmentList(jurisdictionInfo)[1];
@@ -302,7 +303,7 @@
 
     // get the filtered results
     jurisdictionInfo = selectedReg;
-    console.log(jurisdictionInfo);
+    // console.log(jurisdictionInfo);
     selectedJurisdiction = governmentList(jurisdictionInfo)[0];
     municipalFilter = governmentList(jurisdictionInfo)[1];
     conservationFilter = governmentList(jurisdictionInfo)[2];
@@ -393,7 +394,7 @@
     // only load the maps when the google sheet data is loaded
     // read the csvfile from google sheets
 
-    console.log(dataLoaded);
+    // console.log(dataLoaded);
 
     const csv = await processCsv(municipalCsv);
     dataLoaded = handleCsvData(csv.data, csv.meta.fields);
@@ -401,14 +402,14 @@
     if (dataLoaded) {
       map = new maplibregl.Map({
         container: "map",
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        style: cartoBasemap, //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
         center: [-79.0, 44.1], // starting position
         zoom: 8, // starting zoom;
         minZoom: 2,
         maxZoom: 17,
         projection: "globe",
         scrollZoom: true,
-        attributionControl: false,
+        attributionControl: true,
       });
       // Adding scale bar to the map
       let scale = new maplibregl.ScaleControl({
@@ -464,19 +465,15 @@
               ["get", "MUN_LAYER"], // Property in your GeoJSON data containing the values
               "white",
               0,
-              "grey",
+              "lightgrey",
               1, // 1 or lower
-              "#a9d6e5",
-              3, // 3
-              "#89c2d9",
-              4, // 4-7
-              "#2c7da0",
-              7, // 7-10
-              "#2a6f97",
-              10,
-              "#013a63",
+              "#cbe0e8",
+              4, // 3
+              "#6FC7EA",
+              8,
+              "#00a6e8",
             ],
-            "fill-opacity": 0.7,
+            "fill-opacity": 0.5,
           },
         });
         map.addLayer({
@@ -485,7 +482,7 @@
           source: "municipalities",
           layout: {},
           paint: {
-            "line-color": "#000000", // Border color
+            "line-color": "#1E3765", // Border color
             "line-width": 1, // Border width
           },
         });
@@ -495,7 +492,7 @@
           source: "uppertier",
           layout: {},
           paint: {
-            "line-color": "grey", // Border color
+            "line-color": "#1E3765", // Border color
             "line-width": 3, // Border width
           },
         });
@@ -510,7 +507,7 @@
           source: "conservationAuthority",
           layout: {},
           paint: {
-            "line-color": "grey", // Border color
+            "line-color": "#007FA3", // Border color
             "line-width": 2, // Border width
             "line-dasharray": [2, 2],
           },
@@ -521,8 +518,8 @@
           source: "conservationAuthority",
           layout: {},
           paint: {
-            "line-color": "#DC4633", // Border color
-            "line-width": 3.5, // Border width
+            "line-color": "#F1C500", // Border color
+            "line-width": 7, // Border width
           },
           filter: ["==", ["get", "LEGAL_NAME"], ""],
         });
@@ -533,8 +530,8 @@
           source: "uppertier",
           layout: {},
           paint: {
-            "line-color": "#DC4633", // Border color
-            "line-width": 4, // Border width
+            "line-color": "#F1C500", // Border color
+            "line-width": 7, // Border width
           },
           filter: ["==", ["get", "CDNAME"], ""],
         });
@@ -544,8 +541,8 @@
           source: "municipalities",
           layout: {},
           paint: {
-            "line-color": "#DC4633", // Border color
-            "line-width": 4, // Border width
+            "line-color": "#F1C500", // Border color
+            "line-width": 7, // Border width
           },
           filter: ["==", ["get", "CSDNAME"], ""],
         });
@@ -712,56 +709,30 @@
       alert("Sorry, no geocoding results for " + query);
     }
   };
+
 </script>
 <main>
   <div id="map" />
-    <div id="logo">
-      <a href="https://www.schoolofcities.utoronto.ca/"><img src={logo} alt="School of Cities"></a>
-    </div>
+  <!-- <div id="logo">
+    <a href="https://www.schoolofcities.utoronto.ca/"
+      ><img src={logo} alt="School of Cities" /></a
+    > </div>-->
+  
+
   <div class="intro">
-    
-    <h1>Flood Data Equity</h1>
-    <h3>of the Greater Toronto Area (GTA)</h3>
-    <p1> # of Municipal Flood Data Layers </p1> <br />
-    <span class="dot" style="background-color: grey"
-      ><p style="font-weight: bold; color: white; margin-left: 9px;">
-        <b>0</b>
-      </p></span
-    >
-    <span class="dot" style="background-color: #a9d6e5"
-      ><p style="font-weight: bold; color: black; margin-left: 5px;">
-        1+
-      </p></span
-    >
-    <span class="dot" style="background-color: #89c2d9"
-      ><p style="font-weight: bold; color: black; margin-left: 4px;">
-        3+
-      </p></span
-    >
-    <span class="dot" style="background-color: #2c7da0"
-      ><p style="font-weight: bold; color: white; margin-left: 4px;">
-        4+
-      </p></span
-    >
-    <span class="dot" style="background-color: #2a6f97"
-      ><p style="font-weight: bold; color: white; margin-left: 4px;">
-        7+
-      </p></span
-    >
-    <span class="dot" style="background-color: #013a63"
-      ><p style="font-weight: bold; color: white; margin-left: 1px;">
-        10+
-      </p></span
-    >
-
-    <p id="info">
-      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
-        >Michael Liu</a
+    <h1>~ Flood Data Equity ~</h1>
+   
+    <p id="info">Search in the <span id="purple">Greater Toronto Area (GTA)</span> pertaining to flooding risk. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
+      <span 
+      id="about-button"
+      on:click={() => {
+        about = true;
+    }}
       >
-      and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
-      <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
+      Click here to read more about this page and related research
+    </span>
     </p>
-
+    
     <p1><b> Select A Local Municipality:</b> </p1>
     <div class="bar" />
 
@@ -803,14 +774,57 @@
     <input bind:value={query} placeholder="i.e. 100 St George St, Toronto" />
     <button on:click={getResults} disabled={query.length < 1}>Search</button>
 
+    <p1> # of Flood Data Layers by Lower-Tier Municipality</p1> <br />
+    <span class="dot" style="background-color: lightgrey"
+      ><p style="font-weight: bold; color: white; margin-left: 9px;">
+        <b>0</b>
+      </p></span
+    >
+    <span class="dot" style="background-color: #cbe0e8"
+      ><p style="font-weight: bold; color: black; margin-left: 5px;">
+        1+
+      </p></span
+    >
+    <span class="dot" style="background-color: #6fc7ea"
+      ><p style="font-weight: bold; color: black; margin-left: 4px;">
+        4+
+      </p></span
+    >
+    <span class="dot" style="background-color: #00a6e8"
+      ><p style="font-weight: bold; color: black; margin-left: 4px;">
+        8+
+      </p></span
+    >
+    <!-- <span class="dot" style="background-color: #2a6f97"
+      ><p style="font-weight: bold; color: white; margin-left: 4px;">
+        7+
+      </p></span
+    >
+    <span class="dot" style="background-color: #013a63"
+      ><p style="font-weight: bold; color: white; margin-left: 1px;">
+        10+
+      </p></span
+    > -->
+
+    
+    
+
     {#if popupContent}
-      <h1>{jurisdictionInfo}</h1>
+
+    <div id="available">
+      <p>Available datasets for selected area:</p>
+    </div>
+    
+      <h2 id="datatitle">{jurisdictionInfo.toUpperCase()}</h2>
       <!-- Present Each List of CSV Links-->
       {#if selectedJurisdiction}
-        {#if !jurisdictionInfo.endsWith("Authority")}
-          <span id="subtitle"><b># of Layers: </b></span
-          >{selectedJurisdiction.length}
+        
+          <!-- <span id="subtitlelayers"><b>{selectedJurisdiction.length} Layers</b></span
+          > -->
+        {#if selectedJurisdiction.length < 1}
+            <p>No data available<p>
         {/if}
+        
         {#each selectedJurisdiction as entry, i}
           <p>
             <b>{i + 1}. </b><a href={entry.LINK} target="_blank"
@@ -824,7 +838,9 @@
       <!-- Present Each List of CSV Links-->
       {#if municipalFilter}
         {#if municipalFilter.length > 0}
-          <h2>Lower-Tier Municipalities ({municipalFilter.length} Layers)</h2>
+          <h3>Lower-Tier Municipalities 
+            <!-- ({municipalFilter.length} Layers) -->
+          </h3>
 
           {#each municipalFilter as entry, i}
             {#if i == 0}
@@ -849,7 +865,9 @@
       <!-- Regional Layers -->
       {#if regionalFilter}
         {#if regionalFilter.length > 0}
-          <h2>Regional Municipalities ({regionalFilter.length} Layers)</h2>
+          <h3>Regional Municipalities 
+            <!-- ({regionalFilter.length} Layers) -->
+          </h3>
 
           {#each regionalFilter as entry, i}
             {#if i == 0}
@@ -871,7 +889,9 @@
 
       {#if conservationFilter}
         {#if conservationFilter.length > 0}
-          <h2>Conservation Authorities ({conservationFilter.length} Layers)</h2>
+          <h3>Conservation Authorities
+             <!-- ({conservationFilter.length} Layers) -->
+            </h3>
 
           {#each conservationFilter as entry, i}
             {#if i == 0}
@@ -894,7 +914,143 @@
       {/if}
     {/if}
     <p></p>
+
+    <p id="infosmall">
+      <br>
+      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/" target="_blank"
+        >Michael Liu</a
+      >
+      and <a href="https://jamaps.github.io/about.html" target="_blank">Jeff Allen</a> at the
+      <a href="https://schoolofcities.utoronto.ca/" target="_blank">School of Cities</a>. Basemap data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> hosted via <a href="https://carto.com/" target="_blank">CARTO</a>. Map built with <a href="https://maplibre.org/" target="_blank">MapLibre GL JS</a>. Page built with <a href="https://svelte.dev/" target="_blank">Svelte</a>.
+      <br>
+    </p>
+    <div id="logo">
+      <a href="https://www.schoolofcities.utoronto.ca/"
+        ><img src={logo} alt="School of Cities" /></a
+      >
+    </div>
+
   </div>
+  {#if about}
+  <div class="container">
+  <div class="floating">
+    <button
+    id="application-button"
+    on:click={() => {
+        about = false;
+
+    }}
+    style="background-color: {about
+        ? '#1e3765'
+        : ''}; color: {about ? 'white' : 'black'}">Close
+        </button
+>
+    <h1>About the Research</h1>
+    <p>
+      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the
+      1500s, when an unknown printer took a galley of type and scrambled it to
+      make a type specimen book. It has survived not only five centuries, but
+      also the leap into electronic typesetting, remaining essentially
+      unchanged. It was popularised in the 1960s with the release of Letraset
+      sheets containing Lorem Ipsum passages, and more recently with desktop
+      publishing software like Aldus PageMaker including versions of Lorem
+      Ipsum. Why do we use it? It is a long established fact that a reader will
+      be distracted by the readable content of a page when looking at its
+      layout. The point of using Lorem Ipsum is that it has a more-or-less
+      normal distribution of letters, as opposed to using 'Content here, content
+      here', making it look like readable English. Many desktop publishing
+      packages and web page editors now use Lorem Ipsum as their default model
+      text, and a search for 'lorem ipsum' will uncover many web sites still in
+      their infancy. Various versions have evolved over the years, sometimes by
+      accident, sometimes on purpose (injected humour and the like). Where does
+      it come from? Contrary to popular belief, Lorem Ipsum is not simply random
+      text. It has roots in a piece of classical Latin literature from 45 BC,
+      making it over 2000 years old. Richard McClintock, a Latin professor at
+      Hampden-Sydney College in Virginia, looked up one of the more obscure
+      Latin words, consectetur, from a Lorem Ipsum passage, and going through
+      the cites of the word in classical literature, discovered the undoubtable
+      source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus
+      Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in
+      45 BC. This book is a treatise on the theory of ethics, very popular
+      during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor
+      sit amet..", comes from a line in section 1.10.32. The standard chunk of
+      Lorem Ipsum used since the 1500s is reproduced below for those interested.
+      Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by
+      Cicero are also reproduced in their exact original form, accompanied by
+      English versions from the 1914 translation by H. Rackham. Where can I get
+      some? There are many variations of passages of Lorem Ipsum available, but
+      the majority have suffered alteration in some form, by injected humour, or
+      randomised words which don't look even slightly believable. If you are
+      going to use a passage of Lorem Ipsum, you need to be sure there isn't
+      anything embarrassing hidden in the middle of text. All the Lorem Ipsum
+      generators on the Internet tend to repeat predefined chunks as necessary,
+      making this the first true generator on the Internet. It uses a dictionary
+      of over 200 Latin words, combined with a handful of model sentence
+      structures, to generate Lorem Ipsum which looks reasonable. The generated
+      Lorem Ipsum is therefore always free from repetition, injected humour, or
+      non-characteristic words etc.
+      <br />
+      <br />
+
+      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industry's standard dummy text ever since the
+      1500s, when an unknown printer took a galley of type and scrambled it to
+      make a type specimen book. It has survived not only five centuries, but
+      also the leap into electronic typesetting, remaining essentially
+      unchanged. It was popularised in the 1960s with the release of Letraset
+      sheets containing Lorem Ipsum passages, and more recently with desktop
+      publishing software like Aldus PageMaker including versions of Lorem
+      Ipsum. Why do we use it? It is a long established fact that a reader will
+      be distracted by the readable content of a page when looking at its
+      layout. The point of using Lorem Ipsum is that it has a more-or-less
+      normal distribution of letters, as opposed to using 'Content here, content
+      here', making it look like readable English. Many desktop publishing
+      packages and web page editors now use Lorem Ipsum as their default model
+      text, and a search for 'lorem ipsum' will uncover many web sites still in
+      their infancy. Various versions have evolved over the years, sometimes by
+      accident, sometimes on purpose (injected humour and the like). Where does
+      it come from? Contrary to popular belief, Lorem Ipsum is not simply random
+      text. It has roots in a piece of classical Latin literature from 45 BC,
+      making it over 2000 years old. Richard McClintock, a Latin professor at
+      Hampden-Sydney College in Virginia, looked up one of the more obscure
+      Latin words, consectetur, from a Lorem Ipsum passage, and going through
+      the cites of the word in classical literature, discovered the undoubtable
+      source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus
+      Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in
+      45 BC. This book is a treatise on the theory of ethics, very popular
+      during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor
+      sit amet..", comes from a line in section 1.10.32. The standard chunk of
+      Lorem Ipsum used since the 1500s is reproduced below for those interested.
+      Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by
+      Cicero are also reproduced in their exact original form, accompanied by
+      English versions from the 1914 translation by H. Rackham. Where can I get
+      some? There are many variations of passages of Lorem Ipsum available, but
+      the majority have suffered alteration in some form, by injected humour, or
+      randomised words which don't look even slightly believable. If you are
+      going to use a passage of Lorem Ipsum, you need to be sure there isn't
+      anything embarrassing hidden in the middle of text. All the Lorem Ipsum
+      generators on the Internet tend to repeat predefined chunks as necessary,
+      making this the first true generator on the Internet. It uses a dictionary
+      of over 200 Latin words, combined with a handful of model sentence
+      structures, to generate Lorem Ipsum which looks reasonable. The generated
+      Lorem Ipsum is therefore always free from repetition, injected humour, or
+      non-characteristic words etc.
+    </p>
+    <button
+    id="application-button"
+    on:click={() => {
+        about = false;
+
+    }}
+    style="background-color: {about
+        ? '#1e3765'
+        : ''}; color: {about ? 'white' : 'black'}">Close</button
+>
+  </div>
+</div>
+{/if}
+
 </main>
 
 <style>
@@ -942,16 +1098,17 @@
     height: 100vh;
     font-size: 17px;
     font-family: TradeGothicBold;
-    background-color: rgb(254, 251, 249, 1);
+    background-color: #f8fbfc;
+    /* background-color: rgb(254, 251, 249, 1); */
+    border-right: solid 1px #6FC7EA;
     color: #1e3765;
     padding: 10px;
     padding-right: 20px;
-    border-radius: 5px;
     overflow-x: hidden;
   }
 
   h1 {
-    font-size: 40px;
+    font-size: 34px;
     font-family: TradeGothicBold;
     padding: 0px;
     padding-left: 4px;
@@ -982,6 +1139,8 @@
     padding-left: 4px;
     margin: 0px;
     margin-top: 8px;
+    margin-bottom: 12px;
+    text-decoration: underline;
     /* margin-bottom: -4px; */
     color: #1e3765;
     /* -webkit-text-stroke: 1px #6FC7EA; */
@@ -989,19 +1148,41 @@
   #subtitle {
     font-family: TradeGothicBold;
     color: #6d247a;
+    font-size: 18px;
+    padding-left: 4px;
+    font-weight: bold;
+  }
+
+  #subtitlelayers {
+    font-family: TradeGothicBold;
+    color: #1e3765;
     font-size: 16px;
     font-weight: bold;
   }
 
+  #datatitle {
+    font-family: TradeGothicBold;
+    text-decoration: none;
+    color: #6d247a;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 15px;
+    padding-top: 10px;
+  }
+
+  #purple {
+    color: #6d247a;
+  }
+
   p {
     margin-top: 5px;
-    margin-left: 30px;
+    margin-left: 5px;
     margin-bottom: 15px;
     font-family: RobotoRegular;
     font-size: 14px;
     opacity: 1;
     color: #007fa3;
-    font-weight: bold;
+    /* font-weight: bold; */
   }
 
   p1 {
@@ -1020,7 +1201,7 @@
   }
 
   #info {
-    font-size: 13px;
+    font-size: 15px;
     padding: 0px;
     padding-left: 4px;
     margin: 0px;
@@ -1028,6 +1209,23 @@
     margin-top: 7px;
     padding-top: 7px;
     padding-bottom: 15px;
+  }
+
+  #infosmall {
+    font-size: 12px;
+    padding: 0px;
+    padding-left: 4px;
+    margin: 0px;
+    border-top: solid 1px #e7e7e7;
+    margin-top: 7px;
+    padding-top: 7px;
+    padding-bottom: 15px;
+  }
+
+  #available {
+    margin-top: 20px;
+    margin-bottom: -10px;
+    border-top: solid 1px #6FC7EA;
   }
 
   button {
@@ -1079,15 +1277,103 @@
 
   #logo {
     position: absolute;
-		max-width: 550px;
-		height: 5vh;
-    right:0px;
-    bottom:0px;
-    background-color: rgb(254, 251, 249, 0.5);
-		z-index: 6;
-	}
+    max-width: 550px;
+    height: 5vh;
+    /* right: 0px; */
+    /* bottom: 0px; */
+    /* background-color: rgb(254, 251, 249, 0.5); */
+    z-index: 6;
+    opacity: 0.7;
+  }
+  #logo:hover {
+    opacity: 1;
+  }
   img {
-		height: 5vh;
-		color: blue;
-	}
+    height: 5vh;
+    color: blue;
+  }
+  .container {
+    border: 0px solid #dddddd;
+    width: 100vw;
+    height: 100vh;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    background-color: grey;
+    opacity: 0.92;
+  }
+
+  .floating {
+    height: 90vh;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 5vh;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: white;
+    opacity: 1;
+    overflow-y: scroll;
+    scrollbar-width: 1px;
+  }
+  .floating h1 {
+    margin: 0 auto;
+    max-width: 700px;
+    padding-top: 30px;
+    position: relative;
+    text-align: justify;
+    color: #4d4d4d;
+    line-height: 1.5;
+  }
+
+  .floating p {
+    margin: 0 auto;
+    max-width: 700px;
+    padding-bottom: 30px;
+    padding-top: 30px;
+    position: relative;
+    font-size: 17px;
+    text-align: justify;
+    color: #4d4d4d;
+    line-height: 1.5;
+  }
+  /* SCROLL BARS */
+  ::-webkit-scrollbar {
+    width: 5px;
+  } /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 5px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #41729f;
+    border-radius: 5px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #41729f;
+  }
+  #application-button{
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0px;
+  }
+  #application-button:hover {
+    cursor: pointer;
+
+  }
+  #about-button{
+    text-decoration: underline;
+  }
+  #about-button:hover {
+    cursor: pointer;
+    color: #dc4633;
+
+  }
+  
 </style>
