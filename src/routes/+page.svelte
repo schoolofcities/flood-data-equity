@@ -409,7 +409,7 @@
         maxZoom: 17,
         projection: "globe",
         scrollZoom: true,
-        attributionControl: false,
+        attributionControl: true,
       });
       // Adding scale bar to the map
       let scale = new maplibregl.ScaleControl({
@@ -915,13 +915,13 @@
     {/if}
     <p></p>
 
-    <p id="info">
+    <p id="infosmall">
       <br>
-      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/"
+      Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/" target="_blank"
         >Michael Liu</a
       >
-      and <a href="https://jamaps.github.io/about.html">Jeff Allen</a> at the
-      <a href="https://schoolofcities.utoronto.ca/">School of Cities</a>
+      and <a href="https://jamaps.github.io/about.html" target="_blank">Jeff Allen</a> at the
+      <a href="https://schoolofcities.utoronto.ca/" target="_blank">School of Cities</a>. Basemap data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> hosted via <a href="https://carto.com/" target="_blank">CARTO</a>. Map built with <a href="https://maplibre.org/" target="_blank">MapLibre GL JS</a>. Page built with <a href="https://svelte.dev/" target="_blank">Svelte</a>.
       <br>
     </p>
     <div id="logo">
@@ -1202,6 +1202,17 @@
 
   #info {
     font-size: 15px;
+    padding: 0px;
+    padding-left: 4px;
+    margin: 0px;
+    border-top: solid 1px #e7e7e7;
+    margin-top: 7px;
+    padding-top: 7px;
+    padding-bottom: 15px;
+  }
+
+  #infosmall {
+    font-size: 12px;
     padding: 0px;
     padding-left: 4px;
     margin: 0px;
