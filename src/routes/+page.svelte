@@ -612,6 +612,15 @@
     "https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=";
 
   const getResults = async () => {
+    // remove query that includes "Canada" to prevent the query from failing. 
+    /*
+    if (query.toLowerCase().includes("ontario")){
+      query = query
+    }
+    else{
+      query = query + ", Ontario"
+    }*/
+      
     results = await fetch(baseUrl + query).then((res) => res.json());
     if (results.length > 0) {
       //this is to remove the previous address point searched (if true)
@@ -619,11 +628,26 @@
         map.removeSource(`address ${lon}`);
         map.removeLayer(`address-layer ${lon}`);
       }
+      console.log(results)
+      console.log(results.length)
+
+      // limiting query to a box bound by the GTA. 
+      var queryResults = []
+      for (let i = 0; i <results.length; i++){
+        if ((parseFloat(results[i].lon) > -80.20185 && parseFloat(results[i].lon) < -78.41080) && (parseFloat(results[i].lat) < 44.5092 && parseFloat(results[i].lat) > 43.27279))  {
+          console.log(results[i])
+          queryResults.push([results[i].lat, results[i].lon])
+        }
+      }
+      // when there are multiple addresses inside the boundary. 
+
+      lat = queryResults[0][0];
+      lon = queryResults[0][1];
+      console.log(lat, lon)
 
       //get long - lat
-      lat = +results[0].lat;
-      lon = +results[0].lon;
-      console.log(lat, lon);
+      
+      //console.log(lat, lon);
       map.flyTo({
         // These options control the ending camera position: centered at
         // the target, at zoom level 16, and north up.
