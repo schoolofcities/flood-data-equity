@@ -1,38 +1,9 @@
-# create-svelte
+# Flood Data Equity
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This map is part of the project lead by Dr. Nidhi Subramanyam to examine the availability of flood data that public can view/download from the internet. 
 
-## Creating a project
+Data is stored on a google sheet to allow future data addition
+https://docs.google.com/spreadsheets/d/1_9Vk0V2rcLlY--kx1Nh0jX6uCAr51-OkaNccws9P2R0/edit#gid=193533627
 
-If you're seeing this, you've probably already done this step. Congrats!
+The sheet is divided into three tabs, municipal, regional, and conservation authorities. Data from the open from the municipalilities will be stored in the municipal tab, regional government data (York, Peel, Halton.. etc) will be stored in regional table, and conservation authority data (i.e TRCA) will be stored in the conservation authorities tab. 
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
