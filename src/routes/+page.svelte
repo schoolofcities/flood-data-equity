@@ -985,16 +985,18 @@
       </button>
   <h1>Taking stock of data on flooding in the GTA</h1>
   <p>
-    On December 15, 2023, The Toronto Star published a report on Toronto’s secret flood map, which revealed that most Torontonians do not have access to publicly available open data to assess if their homes are at risk of flooding. The unavailability of such data or the limited usability of existing data is a factor preventing people from taking flood risk mitigation measures such as moving away from floodplains, retrofitting their homes to reduce flooding, insuring their property and belongings, or demanding action from the government to prevent damaging impacts during future flooding events. 
+    On December 15, 2023, The Toronto Star published a <a href="https://www.thestar.com/interactives/torontos-secret-flood-map-your-home-could-be-at-risk-of-flooding-and-youd-never/article_1e35fe6a-8a1e-11ee-a228-ab1e8de2cf96.html" target="_blank">report on Toronto’s secret flood map</a>, which revealed that most Torontonians do not have access to publicly available open data to assess if their homes are at risk of flooding. The unavailability of such data or the limited usability of existing data is a factor preventing people from taking flood risk mitigation measures such as moving away from floodplains, retrofitting their homes to reduce flooding, insuring their property and belongings, or demanding action from the government to prevent damaging impacts during future flooding events. 
   </p>
   <p>
-    To help assess the availability and quality of flooding-related data and information in the city or region, our team ‘scavenged’ multiple government websites and open data portals. We found various flooding datasets available in the public domain at the municipal level in the Greater Toronto Area (GTA). We also identified plans to mitigate flood risk. The map shows these plans and datasets by municipality, conservation area, and by street address. Overall, this map shows that the openly available flood data are largely historical; they do not predict how flooding will vary in the future with climate change. Few, if any, adequately characterize the differential impacts of flooding on vulnerabilized communities. Many of these datasets also fail to mention how the underlying data were generated and if there was any community input in the process. Similarly, not all data are maintained and updated regularly. Very few municipalities (e.g., Durham Region) provide guidance about what residents can do before, during, or after a flood to reduce impacts. 
+    To help assess the availability and quality of flooding-related data and information in the city or region, our team ‘scavenged’ multiple government websites and open data portals. We found various flooding datasets available in the public domain at the municipal level in the Greater Toronto Area (GTA). We also identified plans to mitigate flood risk. The map shows these plans and datasets by municipality, <a href="https://conservationontario.ca/conservation-authorities/about-conservation-authorities" target="_blank">conservation area</a>, and by street address. Overall, this map shows that the openly available flood data are largely historical; they do not predict how flooding will vary in the future with climate change. Few, if any, adequately characterize the differential impacts of flooding on vulnerabilized communities. Many of these datasets also fail to mention how the underlying data were generated and if there was any community input in the process. Similarly, not all data are maintained and updated regularly. Very few municipalities (e.g., Durham Region) provide guidance about what residents can do before, during, or after a flood to reduce impacts. 
   </p>
   <p>
     To ensure that the GTA is resilient in the face of future flooding events, municipalities and higher tiers of government should open up additional information on changing precipitation patterns, existing flooding hotspots, damages from past flooding events, communities vulnerable to flooding, as well as infrastructures being developed to mitigate flooding risk. This information ecosystem should be updated regularly to ensure that flooding projections account for changing land use and development patterns as well as infrastructural interventions aimed at reducing flooding. Flooding is costly. Thousands of individuals pay the price for avoidable flood impacts and damages. The unavailability or privatization of data on projected flooding impacts shouldn’t add to the costs of building a flood-resilient GTA.
   </p>
   <p>
-    This project is part of a broader effort by the Toronto Climate Observatory and the School of Cities to assess the inequitable distribution of flooding across the Greater Toronto Area. Research has demonstrated that vulnerabilized communities, such as Indigenous, racialized, or economically disadvantaged, are most impacted by climate hazards, and struggle the most to recover in their aftermath. Yet too little has been done in our region to fully assess flood risk from this perspective, a necessary first step to guide develop an effective response. By evaluating existing information on flooding, this project aims to identify priority information needs that our work, and that of others, may contribute to meeting.
+    This project is part of a broader effort by the <a href="https://www.climateobservatory.ca/" target="_blank"
+    >Toronto Climate Observatory</a> and the <a href="https://www.schoolofcities.utoronto.ca/" target="_blank"
+    >School of Cities</a> to assess the inequitable distribution of flooding across the Greater Toronto Area. Research has demonstrated that vulnerabilized communities, such as Indigenous, racialized, or economically disadvantaged, are most impacted by climate hazards, and struggle the most to recover in their aftermath. Yet too little has been done in our region to fully assess flood risk from this perspective, a necessary first step to guide develop an effective response. By evaluating existing information on flooding, this project aims to identify priority information needs that our work, and that of others, may contribute to meeting.
   </p>
   <p>
     We will periodically update this flooding data repository and welcome your comments, critiques, and suggestions.
@@ -1068,8 +1070,6 @@
     position: absolute;
   }
 
-
-
   .intro {
     position: absolute;
     top: 0px;
@@ -1086,6 +1086,27 @@
     padding: 10px;
     padding-right: 20px;
     overflow-x: hidden;
+  }
+
+  @media screen and (max-width: 600px) {
+    #map {
+      width: 100vw;
+      height: 50vh;
+      top: 0;
+      left: 0;
+      position: absolute;
+    }
+
+    .intro {
+      width: calc(100vw - 30px);
+      height: 50vh;
+      top: 50vh;
+      left: 0;
+      min-width: 0;
+      border-top: solid 1px #6FC7EA;
+      border-right: none;
+      position: absolute;
+    }
   }
 
   .bar {
