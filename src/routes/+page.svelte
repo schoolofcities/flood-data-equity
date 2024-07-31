@@ -1155,6 +1155,8 @@
     padding: 5px;
     padding-left: 15px;
     padding-right: 15px;
+    margin-top: 5px;
+    margin-bottom: 12px;
     font-style: italic;
     border: solid 1px #6FC7EA;
     border-bottom-right-radius: 25px;
