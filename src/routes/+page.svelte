@@ -10,6 +10,7 @@
   import lookupTable from "../data/lookupTable.json";
   import Papa from "papaparse";
   import logo from "../assets/top-logo-full.svg";
+  import logoTCO from "../assets/TCOlogo.png";
 
   const municipalCsv =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
@@ -750,6 +751,7 @@
 
   <div class="intro">
     <h1>~ Flood Data Equity ~</h1>
+    <h2>Taking stock of data on flooding in the GTA</h2>
    
     <p id="info">Search in the <span id="purple">Greater Toronto Area (GTA)</span> pertaining to flooding risk. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
       <span 
@@ -946,6 +948,8 @@
 
     <p id="infosmall">
       <br>
+      Research by Nicole Gordon, Emily Majeed, <a href="https://www.geography.utoronto.ca/people/directories/all-faculty/nidhi-subramanyam" target="_blank">Nidhi Subramanyam</a>, and <a href="https://www.environment.utoronto.ca/people/directories/all-faculty/robert-soden" target="_blank">Robert Soden</a>
+      <br><br>
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/" target="_blank"
         >Michael Liu</a
       >
@@ -954,130 +958,72 @@
       <br>
     </p>
     <div id="logo">
-      <a href="https://www.schoolofcities.utoronto.ca/"
+      <a href="https://www.schoolofcities.utoronto.ca/" target="_blank"
         ><img src={logo} alt="School of Cities" /></a
       >
+      &nbsp; &nbsp; 
+      <a href="https://www.climateobservatory.ca/" target="_blank"
+        ><img src={logoTCO} alt="Toronto Climate Observatory" /></a
+      >
     </div>
-    {#if about}
-    <div class="container">
-    <div class="floating">
-      <button
-      id="application-button"
-      on:click={() => {
-          about = false;
-  
-      }}
-      style="background-color: {about
-          ? '#1e3765'
-          : ''}; color: {about ? 'white' : 'black'}">Close
-          </button>
-      <h1>About the Research</h1>
-      <p>
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        Lorem Ipsum has been the industry's standard dummy text ever since the
-        1500s, when an unknown printer took a galley of type and scrambled it to
-        make a type specimen book. It has survived not only five centuries, but
-        also the leap into electronic typesetting, remaining essentially
-        unchanged. It was popularised in the 1960s with the release of Letraset
-        sheets containing Lorem Ipsum passages, and more recently with desktop
-        publishing software like Aldus PageMaker including versions of Lorem
-        Ipsum. Why do we use it? It is a long established fact that a reader will
-        be distracted by the readable content of a page when looking at its
-        layout. The point of using Lorem Ipsum is that it has a more-or-less
-        normal distribution of letters, as opposed to using 'Content here, content
-        here', making it look like readable English. Many desktop publishing
-        packages and web page editors now use Lorem Ipsum as their default model
-        text, and a search for 'lorem ipsum' will uncover many web sites still in
-        their infancy. Various versions have evolved over the years, sometimes by
-        accident, sometimes on purpose (injected humour and the like). Where does
-        it come from? Contrary to popular belief, Lorem Ipsum is not simply random
-        text. It has roots in a piece of classical Latin literature from 45 BC,
-        making it over 2000 years old. Richard McClintock, a Latin professor at
-        Hampden-Sydney College in Virginia, looked up one of the more obscure
-        Latin words, consectetur, from a Lorem Ipsum passage, and going through
-        the cites of the word in classical literature, discovered the undoubtable
-        source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus
-        Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in
-        45 BC. This book is a treatise on the theory of ethics, very popular
-        during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor
-        sit amet..", comes from a line in section 1.10.32. The standard chunk of
-        Lorem Ipsum used since the 1500s is reproduced below for those interested.
-        Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by
-        Cicero are also reproduced in their exact original form, accompanied by
-        English versions from the 1914 translation by H. Rackham. Where can I get
-        some? There are many variations of passages of Lorem Ipsum available, but
-        the majority have suffered alteration in some form, by injected humour, or
-        randomised words which don't look even slightly believable. If you are
-        going to use a passage of Lorem Ipsum, you need to be sure there isn't
-        anything embarrassing hidden in the middle of text. All the Lorem Ipsum
-        generators on the Internet tend to repeat predefined chunks as necessary,
-        making this the first true generator on the Internet. It uses a dictionary
-        of over 200 Latin words, combined with a handful of model sentence
-        structures, to generate Lorem Ipsum which looks reasonable. The generated
-        Lorem Ipsum is therefore always free from repetition, injected humour, or
-        non-characteristic words etc.
-        <br />
-        <br />
-  
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        Lorem Ipsum has been the industry's standard dummy text ever since the
-        1500s, when an unknown printer took a galley of type and scrambled it to
-        make a type specimen book. It has survived not only five centuries, but
-        also the leap into electronic typesetting, remaining essentially
-        unchanged. It was popularised in the 1960s with the release of Letraset
-        sheets containing Lorem Ipsum passages, and more recently with desktop
-        publishing software like Aldus PageMaker including versions of Lorem
-        Ipsum. Why do we use it? It is a long established fact that a reader will
-        be distracted by the readable content of a page when looking at its
-        layout. The point of using Lorem Ipsum is that it has a more-or-less
-        normal distribution of letters, as opposed to using 'Content here, content
-        here', making it look like readable English. Many desktop publishing
-        packages and web page editors now use Lorem Ipsum as their default model
-        text, and a search for 'lorem ipsum' will uncover many web sites still in
-        their infancy. Various versions have evolved over the years, sometimes by
-        accident, sometimes on purpose (injected humour and the like). Where does
-        it come from? Contrary to popular belief, Lorem Ipsum is not simply random
-        text. It has roots in a piece of classical Latin literature from 45 BC,
-        making it over 2000 years old. Richard McClintock, a Latin professor at
-        Hampden-Sydney College in Virginia, looked up one of the more obscure
-        Latin words, consectetur, from a Lorem Ipsum passage, and going through
-        the cites of the word in classical literature, discovered the undoubtable
-        source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus
-        Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in
-        45 BC. This book is a treatise on the theory of ethics, very popular
-        during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor
-        sit amet..", comes from a line in section 1.10.32. The standard chunk of
-        Lorem Ipsum used since the 1500s is reproduced below for those interested.
-        Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by
-        Cicero are also reproduced in their exact original form, accompanied by
-        English versions from the 1914 translation by H. Rackham. Where can I get
-        some? There are many variations of passages of Lorem Ipsum available, but
-        the majority have suffered alteration in some form, by injected humour, or
-        randomised words which don't look even slightly believable. If you are
-        going to use a passage of Lorem Ipsum, you need to be sure there isn't
-        anything embarrassing hidden in the middle of text. All the Lorem Ipsum
-        generators on the Internet tend to repeat predefined chunks as necessary,
-        making this the first true generator on the Internet. It uses a dictionary
-        of over 200 Latin words, combined with a handful of model sentence
-        structures, to generate Lorem Ipsum which looks reasonable. The generated
-        Lorem Ipsum is therefore always free from repetition, injected humour, or
-        non-characteristic words etc.
-      </p>
-      <button
-        id="application-button"
-        on:click={() => {
-            about = false;
-    
-        }}
-        style="background-color: {about
-            ? '#1e3765'
-            : ''}; color: {about ? 'white' : 'black'}">Close</button>
-    </div>
-  </div>
+
+
+</main>
+
+
+{#if about}
+<div class="container">
+<div class="floating">
+  <button
+  id="application-button"
+  on:click={() => {
+      about = false;
+
+  }}
+  style="background-color: {about
+      ? '#1e3765'
+      : ''}; color: {about ? 'white' : 'black'}">Close
+      </button>
+  <h1>Taking stock of data on flooding in the GTA</h1>
+  <p>
+    On December 15, 2023, The Toronto Star published a report on Toronto’s secret flood map, which revealed that most Torontonians do not have access to publicly available open data to assess if their homes are at risk of flooding. The unavailability of such data or the limited usability of existing data is a factor preventing people from taking flood risk mitigation measures such as moving away from floodplains, retrofitting their homes to reduce flooding, insuring their property and belongings, or demanding action from the government to prevent damaging impacts during future flooding events. 
+  </p>
+  <p>
+    To help assess the availability and quality of flooding-related data and information in the city or region, our team ‘scavenged’ multiple government websites and open data portals. We found various flooding datasets available in the public domain at the municipal level in the Greater Toronto Area (GTA). We also identified plans to mitigate flood risk. The map shows these plans and datasets by municipality, conservation area, and by street address. Overall, this map shows that the openly available flood data are largely historical; they do not predict how flooding will vary in the future with climate change. Few, if any, adequately characterize the differential impacts of flooding on vulnerabilized communities. Many of these datasets also fail to mention how the underlying data were generated and if there was any community input in the process. Similarly, not all data are maintained and updated regularly. Very few municipalities (e.g., Durham Region) provide guidance about what residents can do before, during, or after a flood to reduce impacts. 
+  </p>
+  <p>
+    To ensure that the GTA is resilient in the face of future flooding events, municipalities and higher tiers of government should open up additional information on changing precipitation patterns, existing flooding hotspots, damages from past flooding events, communities vulnerable to flooding, as well as infrastructures being developed to mitigate flooding risk. This information ecosystem should be updated regularly to ensure that flooding projections account for changing land use and development patterns as well as infrastructural interventions aimed at reducing flooding. Flooding is costly. Thousands of individuals pay the price for avoidable flood impacts and damages. The unavailability or privatization of data on projected flooding impacts shouldn’t add to the costs of building a flood-resilient GTA.
+  </p>
+  <p>
+    This project is part of a broader effort by the Toronto Climate Observatory and the School of Cities to assess the inequitable distribution of flooding across the Greater Toronto Area. Research has demonstrated that vulnerabilized communities, such as Indigenous, racialized, or economically disadvantaged, are most impacted by climate hazards, and struggle the most to recover in their aftermath. Yet too little has been done in our region to fully assess flood risk from this perspective, a necessary first step to guide develop an effective response. By evaluating existing information on flooding, this project aims to identify priority information needs that our work, and that of others, may contribute to meeting.
+  </p>
+  <p>
+    We will periodically update this flooding data repository and welcome your comments, critiques, and suggestions.
+  </p>
+  <button
+    id="application-button"
+    on:click={() => {
+        about = false;
+
+    }}
+    style="background-color: {about
+        ? '#1e3765'
+        : ''}; color: {about ? 'white' : 'black'}">Close</button>
+</div>
+</div>
 
 {/if}
 
-</main>
+
+
+
+
+
+
+
+
+
+
 
 <style>
   main {
@@ -1121,6 +1067,7 @@
     top: 0px;
     left: 0px;
     width: 25vw;
+    min-width: 325px;
     height: 100vh;
     font-size: 17px;
     font-family: TradeGothicBold;
@@ -1159,6 +1106,14 @@
     /* -webkit-text-stroke: 1px #6FC7EA; */
     text-decoration: underline;
   }
+
+  .intro h2 {
+    color: #007fa3;
+    text-decoration: none;
+    font-size: 25px;
+    font-style: italic;
+  }
+
   h3 {
     font-size: 20px;
     font-family: TradeGothicBold;
@@ -1257,18 +1212,20 @@
   button {
     font-size: 12px;
     width: 25vw;
+    min-width: 330px;
     margin-bottom: 20px;
     font-family: RobotoRegular;
     border-width: 0px;
   }
 
   input {
-    width: 24vw;
+    width: 25vw;
+    min-width: 317px;
     height: 20px;
     font-family: RobotoRegular;
     color: #6d247a;
     border-width: 0px;
-    margin-right: 5px;
+    margin-right: 0px;
 
     padding-left: 10px;
     padding-top: 3px;
@@ -1277,6 +1234,7 @@
   }
   select {
     width: 25vw;
+    min-width: 330px;
     height: 25px;
     font-family: TradeGothicBold;
     font-size: 16px;
@@ -1303,13 +1261,13 @@
 
   #logo {
     position: absolute;
-    max-width: 550px;
+    width: 550px;
     height: 5vh;
     /* right: 0px; */
     /* bottom: 0px; */
     /* background-color: rgb(254, 251, 249, 0.5); */
     z-index: 6;
-    opacity: 0.7;
+    opacity: 0.8;
   }
   #logo:hover {
     opacity: 1;
@@ -1325,8 +1283,9 @@
     left: 0px;
     top: 0px;
     position: absolute;
-    background-color: grey;
-    opacity: 0.92;
+    background-color: #ffffff;
+    opacity: 0.96;
+    z-index: 9999999999999999;
   }
 
   .floating {
@@ -1338,13 +1297,17 @@
     justify-content: center;
     text-align: center;
     background-color: white;
+    border: solid 1px black;
     opacity: 1;
     overflow-y: scroll;
     scrollbar-width: 1px;
+    z-index: inherit;
   }
   .floating h1 {
     margin: 0 auto;
     max-width: 700px;
+    margin-left: 10px;
+    margin-right: 10px;
     padding-top: 30px;
     position: relative;
     text-align: justify;
@@ -1354,13 +1317,17 @@
 
   .floating p {
     margin: 0 auto;
+    margin-left: 10px;
+    margin-right: 10px;
     max-width: 700px;
-    padding-bottom: 30px;
-    padding-top: 30px;
+    padding-bottom: 5px;
+    padding-top: 10px;
     position: relative;
     font-size: 17px;
     text-align: justify;
     color: #4d4d4d;
+    font-family: RobotoRegular;
+    font-size: 16px;
     line-height: 1.5;
   }
   /* SCROLL BARS */
