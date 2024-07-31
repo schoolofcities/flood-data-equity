@@ -750,8 +750,7 @@
   
 
   <div class="intro">
-    <!-- <h1>~ Flood Data Equity ~</h1> -->
-    <h2>Taking Stock Of Data On Flooding In The GTA</h2>
+    <h1>Taking Stock Of Data On Flooding In The GTA</h1>
    
     <p id="info">Search for data in the <span id="purple">Greater Toronto Area (GTA)</span> pertaining to flooding risk. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
       <span 
@@ -953,7 +952,7 @@
       Map created by <a href="https://www.linkedin.com/in/chun-fu-liu/" target="_blank"
         >Michael Liu</a
       >
-      and <a href="https://jamaps.github.io/about.html" target="_blank">Jeff Allen</a> at the
+      and <a href="https://jamaps.github.io/" target="_blank">Jeff Allen</a> at the
       <a href="https://schoolofcities.utoronto.ca/" target="_blank">School of Cities</a>. Basemap data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> hosted via <a href="https://carto.com/" target="_blank">CARTO</a>. Map built with <a href="https://maplibre.org/" target="_blank">MapLibre GL JS</a>. Page built with <a href="https://svelte.dev/" target="_blank">Svelte</a>.
       <br>
     </p>
@@ -1002,7 +1001,7 @@
     We will periodically update this flooding data repository and welcome your comments, critiques, and suggestions.
   </p>
   <h2>
-    <u>Research Credits</u>
+    Research Credits
   </h2>
   <p>
     Nicole Gordon, Master of Planning student, Toronto Metropolitan University
@@ -1146,7 +1145,7 @@
     text-decoration: underline;
   }
 
-  .intro h2 {
+  .intro h1 {
     /* color: #007fa3; */
     color: #1e3765;
     background-color: #eaf9ff;
@@ -1347,16 +1346,23 @@
   .floating h1 {
     margin: 0 auto;
     max-width: 700px;
-    margin-left: 0px;
-    margin-right: 10px;
-    padding-left: 20px;
-    padding-top: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 7px;
+    padding-left: 25px;
+    padding-top: 5px;
     padding-bottom: 5px;
+    padding-right: 5px;
+    border: solid 1px #6FC7EA;
+    border-bottom-right-radius: 30px;
+    border-top-left-radius: 30px;
     position: relative;
     text-align: left;
     color: #1e3765;
-    text-decoration: underline;
-    font-size: 28px;
+    background-color: #eaf9ff;
+    /* text-decoration: underline; */
+    font-size: 26px;
     font-style: italic;
   }
   .floating h2 {
@@ -1367,6 +1373,7 @@
     padding-left: 20px;
     padding-top: 30px;
     position: relative;
+    text-decoration: none;
     text-align: left;
     color: #1e3765;
     font-size: 22px;
@@ -1388,6 +1395,7 @@
     color: #1e3765;
     font-family: RobotoRegular, sans-serif;
     font-size: 16px;
+    text-decoration: none;
     line-height: 1.5;
   }
   /* SCROLL BARS */
@@ -1412,16 +1420,16 @@
   #application-button{
     width: 100%;
     height: 20px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     margin-bottom: 0px;
     background-color: #41729f;
     color: white;
-    opacity: 0.2
+    opacity: 0.4
   }
   #application-button:hover {
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 1;
 
   }
   #about-button{
