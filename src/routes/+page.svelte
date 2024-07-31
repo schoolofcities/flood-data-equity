@@ -12,12 +12,12 @@
   import logo from "../assets/top-logo-full.svg";
   import logoTCO from "../assets/TCOlogo.png";
 
-  const municipalCsv =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
-  const regionCsv =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=193533627&single=true&output=csv";
-  const consAuthCsv =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=898330427&single=true&output=csv";
+  const municipalCsv = "./GTA Flood Data Equity - Shared Municipal CSV.csv"
+    // "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
+  const regionCsv = "./GTA Flood Data Equity - Shared Regional CSV.csv"
+    // "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=193533627&single=true&output=csv";
+  const consAuthCsv = "./GTA Flood Data Equity - Shared Conservation Authority CSV.csv"
+    // "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=898330427&single=true&output=csv";
   // loads a list of unique jurisdictions (i.e. municipality, region, conservation authority)
   let popupContent = false;
 
@@ -40,7 +40,7 @@
   let lat;
   let lon;
   let results;
-  let about = false;
+  let about = true;
   var cityList = [
     "BRAMPTON",
     "BURLINGTON",
@@ -750,10 +750,10 @@
   
 
   <div class="intro">
-    <h1>~ Flood Data Equity ~</h1>
-    <h2>Taking stock of data on flooding in the GTA</h2>
+    <!-- <h1>~ Flood Data Equity ~</h1> -->
+    <h2>Taking Stock Of Data On Flooding In The GTA</h2>
    
-    <p id="info">Search in the <span id="purple">Greater Toronto Area (GTA)</span> pertaining to flooding risk. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
+    <p id="info">Search for data in the <span id="purple">Greater Toronto Area (GTA)</span> pertaining to flooding risk. Data availability varies substantially across the region, depending on what data municipalities and conservation areas collect and if they share their data publicly. <br><br>
       <span 
       id="about-button"
       on:click={() => {
@@ -965,8 +965,9 @@
       <a href="https://www.climateobservatory.ca/" target="_blank"
         ><img src={logoTCO} alt="Toronto Climate Observatory" /></a
       >
+      <br><br><br>
     </div>
-
+    
 
 </main>
 
@@ -980,9 +981,7 @@
       about = false;
 
   }}
-  style="background-color: {about
-      ? '#1e3765'
-      : ''}; color: {about ? 'white' : 'black'}">Close
+  >Click to close and view the map
       </button>
   <h1>Taking stock of data on flooding in the GTA</h1>
   <p>
@@ -1000,28 +999,45 @@
   <p>
     We will periodically update this flooding data repository and welcome your comments, critiques, and suggestions.
   </p>
+  <h2>
+    <u>Research Credits</u>
+  </h2>
+  <p>
+    Nicole Gordon, Master of Planning student, Toronto Metropolitan University
+  </p>
+  <p>
+    Emily Majeed, 2024 M.Sc. in Planning graduate, University of Toronto
+  </p>
+  <p>
+    <a href="https://www.geography.utoronto.ca/people/directories/all-faculty/nidhi-subramanyam" target="_blank">Nidhi Subramanyam</a>, Assistant Professor, Department of Geography & Planning, University of Toronto
+  </p>
+  <p>
+    <a href="https://www.environment.utoronto.ca/people/directories/all-faculty/robert-soden" target="_blank">Robert Soden</a>, Assistant Professor, Department of Computer Science, and School of the Environment, University of Toronto
+  </p>
+  <br>
+  <p>
+  <a href="https://www.schoolofcities.utoronto.ca/" target="_blank"
+        ><img src={logo} alt="School of Cities" /></a
+      >
+      &nbsp; &nbsp; 
+      <a href="https://www.climateobservatory.ca/" target="_blank"
+        ><img src={logoTCO} alt="Toronto Climate Observatory" /></a
+      >
+    </p>
+  <br>
+  <br>
   <button
-    id="application-button"
-    on:click={() => {
-        about = false;
+  id="application-button"
+  on:click={() => {
+      about = false;
 
-    }}
-    style="background-color: {about
-        ? '#1e3765'
-        : ''}; color: {about ? 'white' : 'black'}">Close</button>
+  }}
+  >Click to close and view the map
+      </button>
 </div>
 </div>
 
 {/if}
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1052,15 +1068,7 @@
     position: absolute;
   }
 
-  .bar {
-    height: 1px;
-    width: 20px;
-    background-color: var(--brandDarkBlue);
-    padding: 0px;
-    margin: 0px;
-    margin-left: 0px;
-    opacity: 0.25;
-  }
+
 
   .intro {
     position: absolute;
@@ -1078,6 +1086,16 @@
     padding: 10px;
     padding-right: 20px;
     overflow-x: hidden;
+  }
+
+  .bar {
+    height: 1px;
+    width: 20px;
+    background-color: var(--brandDarkBlue);
+    padding: 0px;
+    margin: 0px;
+    margin-left: 0px;
+    opacity: 0.25;
   }
 
   h1 {
@@ -1102,15 +1120,17 @@
     margin: 0px;
     margin-top: 8px;
     /* margin-bottom: -4px; */
-    color: #1e3765;
+    color: #007fa3;
     /* -webkit-text-stroke: 1px #6FC7EA; */
     text-decoration: underline;
   }
 
   .intro h2 {
-    color: #007fa3;
+    /* color: #007fa3; */
+    color: #1e3765;
+    background-color: #eaf9ff;
     text-decoration: none;
-    font-size: 25px;
+    font-size: 24px;
     font-style: italic;
   }
 
@@ -1277,27 +1297,27 @@
     color: blue;
   }
   .container {
-    border: 0px solid #dddddd;
+    /* border: 0px solid #dddddd; */
     width: 100vw;
     height: 100vh;
     left: 0px;
     top: 0px;
     position: absolute;
     background-color: #ffffff;
-    opacity: 0.96;
+    opacity: 0.97;
     z-index: 9999999999999999;
   }
 
   .floating {
     height: 90vh;
-    max-width: 800px;
+    max-width: 650px;
     margin: 0 auto;
     margin-top: 5vh;
     align-items: center;
     justify-content: center;
     text-align: center;
     background-color: white;
-    border: solid 1px black;
+    border: solid 1px #6FC7EA;
     opacity: 1;
     overflow-y: scroll;
     scrollbar-width: 1px;
@@ -1306,27 +1326,46 @@
   .floating h1 {
     margin: 0 auto;
     max-width: 700px;
-    margin-left: 10px;
+    margin-left: 0px;
     margin-right: 10px;
+    padding-left: 20px;
+    padding-top: 30px;
+    padding-bottom: 5px;
+    position: relative;
+    text-align: left;
+    color: #1e3765;
+    text-decoration: underline;
+    font-size: 28px;
+    font-style: italic;
+  }
+  .floating h2 {
+    margin: 0 auto;
+    max-width: 700px;
+    margin-left: 0px;
+    margin-right: 10px;
+    padding-left: 20px;
     padding-top: 30px;
     position: relative;
-    text-align: justify;
-    color: #4d4d4d;
-    line-height: 1.5;
+    text-align: left;
+    color: #1e3765;
+    font-size: 22px;
+    font-style: italic;
   }
 
   .floating p {
     margin: 0 auto;
     margin-left: 10px;
     margin-right: 10px;
-    max-width: 700px;
+    /* max-width: 700px; */
     padding-bottom: 5px;
     padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
     position: relative;
     font-size: 17px;
-    text-align: justify;
-    color: #4d4d4d;
-    font-family: RobotoRegular;
+    text-align: left;
+    color: #1e3765;
+    font-family: RobotoRegular, sans-serif;
     font-size: 16px;
     line-height: 1.5;
   }
@@ -1351,17 +1390,22 @@
   }
   #application-button{
     width: 100%;
-    height: 40px;
+    height: 20px;
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 0px;
+    background-color: #41729f;
+    color: white;
+    opacity: 0.2
   }
   #application-button:hover {
     cursor: pointer;
+    opacity: 0.8;
 
   }
   #about-button{
     text-decoration: underline;
+    color: #1e3765;
   }
   #about-button:hover {
     cursor: pointer;
