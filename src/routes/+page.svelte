@@ -1131,6 +1131,7 @@
     /* background-color: #F1C500; */
     /* -webkit-text-stroke: 1px #6FC7EA; */
     font-weight: bold;
+    
   }
 
   h2 {
@@ -1150,8 +1151,14 @@
     color: #1e3765;
     background-color: #eaf9ff;
     text-decoration: none;
-    font-size: 24px;
+    font-size: 23px;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
     font-style: italic;
+    border: solid 1px #6FC7EA;
+    border-bottom-right-radius: 25px;
+    border-top-left-radius: 25px;
   }
 
   h3 {
