@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import maplibregl from "maplibre-gl";
-  import { ScaleControl, NavigationControl } from "maplibre-gl";
   import cartoBasemap from "../assets/carto-basemap.json";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
   import municipalities from "../data/gta-municipalities.geo.json";
@@ -11,6 +10,7 @@
   import Papa from "papaparse";
   import logo from "../assets/top-logo-full.svg";
   import logoTCO from "../assets/TCOlogo.png";
+  import "../assets/maplibre-gl.css";
 
   const municipalCsv = "./GTA Flood Data Equity - Shared Municipal CSV.csv"
     // "https://docs.google.com/spreadsheets/d/e/2PACX-1vQT7hsW3C1bVjp8xP8d-3HtXAMp8tQOUYOCxABymKbuOQP4TWkEDAB3wut7g1tO5Mw527PHFm_tn-dz/pub?gid=0&single=true&output=csv";
@@ -410,7 +410,10 @@
         maxZoom: 14,
         projection: "globe",
         scrollZoom: true,
-        attributionControl: true,
+        attributionControl: false,
+        touchPitch: false,
+        dragRotate: false, // Disable drag to pitch
+        pitchWithRotate: false // Disable pitch control with rotation
       });
       map.setMaxBounds([
         [-82.0, 41.0], // Southwest coordinates
@@ -418,14 +421,20 @@
       ]);
 
       // Adding scale bar to the map
-      let scale = new maplibregl.ScaleControl({
-        maxWidth: 100,
-        unit: "metric",
-      });
+      // Add zoom control to the top right corner
+      map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+      // Add scale bar to the bottom right corner
+      map.addControl(new maplibregl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric' // Use 'imperial' for miles
+      }), 'bottom-right');
+      
+
+
       // Adding additional layers from geojson
       map.on("load", function () {
-        map.addControl(new maplibregl.NavigationControl(), "top-right");
-        map.addControl(scale, "bottom-right");
+       
         const layers = map.getStyle().layers;
 
         // Find the index of the first symbol layer in the map style.
@@ -1043,6 +1052,7 @@
 
 
 <style>
+
   main {
     overflow-y: hidden;
   }
