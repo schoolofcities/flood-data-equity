@@ -405,12 +405,17 @@
         style: cartoBasemap, //'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
         center: [-79.0, 44.1], // starting position
         zoom: 8, // starting zoom;
-        minZoom: 2,
-        maxZoom: 17,
+        minZoom: 7,
+        maxZoom: 14,
         projection: "globe",
         scrollZoom: true,
         attributionControl: true,
       });
+      map.setMaxBounds([
+        [-82.0, 41.0], // Southwest coordinates
+        [-76.0, 46.0]  // Northeast coordinates
+      ]);
+
       // Adding scale bar to the map
       let scale = new maplibregl.ScaleControl({
         maxWidth: 100,
@@ -695,7 +700,7 @@
         source: `address ${lon}`,
         paint: {
           "circle-radius": 8,
-          "circle-color": "#FF0000", // Set the color of the point
+          "circle-color": "#F1C500", // Set the color of the point
         },
       });
       selectedJurisdiction = [];
