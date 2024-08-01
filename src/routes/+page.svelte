@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { fade } from 'svelte/transition';
   import maplibregl from "maplibre-gl";
   import cartoBasemap from "../assets/carto-basemap.json";
   import conservationAuthority from "../data/gta-conservation-authority.geo.json";
@@ -749,6 +750,13 @@
     }
   };
 
+  function handleFloatingContainerClick(event) {
+    // Check if the clicked element is not the 'floating' div
+    if (!event.target.closest('.floating')) {
+      about = false;
+    }
+  }
+
 </script>
 <main>
   <div id="map" />
@@ -981,7 +989,7 @@
 
 
 {#if about}
-<div class="container">
+<div class="container"  on:click={handleFloatingContainerClick} transition:fade={{ duration: 500 }}>
 <div class="floating">
   <button
   id="application-button"
@@ -1004,10 +1012,10 @@
   <p>
     This project is part of a broader effort by the <a href="https://www.climateobservatory.ca/" target="_blank"
     >Toronto Climate Observatory</a> and the <a href="https://www.schoolofcities.utoronto.ca/" target="_blank"
-    >School of Cities</a> to assess the inequitable distribution of flooding across the Greater Toronto Area. Research has demonstrated that vulnerabilized communities, such as Indigenous, racialized, or economically disadvantaged, are most impacted by climate hazards, and struggle the most to recover in their aftermath. Yet too little has been done in our region to fully assess flood risk from this perspective, a necessary first step to guide develop an effective response. By evaluating existing information on flooding, this project aims to identify priority information needs that our work, and that of others, may contribute to meeting.
+    >School of Cities</a> to assess the inequitable distribution of flooding across the Greater Toronto Area. Research has demonstrated that vulnerabilized communities, such as Indigenous, racialized, or economically disadvantaged, are most impacted by climate hazards, and struggle the most to recover in their aftermath. Yet too little has been done in our region to fully assess flood risk from this perspective, a necessary first step to guide develop an effective response. By evaluating existing information on flooding, this project aims to identify priority information needs that our work, and that of others, may contribute to building a flood-resilient Toronto.
   </p>
   <p>
-    We will periodically update this flooding data repository and welcome your comments, critiques, and suggestions.
+    We will periodically update this flooding data repository and welcome your comments, critiques, and suggestions at this <a href="https://forms.office.com/r/X8sdLXVKRx" target='_blank'>link</a>.
   </p>
   <h2>
     Research Credits
@@ -1345,6 +1353,7 @@
     background-color: #ffffff;
     opacity: 0.97;
     z-index: 9999999999999999;
+    cursor: pointer;
   }
 
   .floating {
@@ -1361,6 +1370,7 @@
     overflow-y: scroll;
     scrollbar-width: 1px;
     z-index: inherit;
+    cursor: default;
   }
   .floating h1 {
     margin: 0 auto;
